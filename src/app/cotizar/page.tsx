@@ -81,6 +81,8 @@ export default function CotizarPage() {
           destination: formData.destination,
           budget: formData.budget,
           startDate: formData.startDate,
+          endDate: formData.endDate || 'No definida',
+          travelers: formData.travelers,
           message: formData.requirements || "Solicitud de itinerario personalizado."
         }),
       });

@@ -102,7 +102,6 @@ export default function CarritoPage() {
                   <h2 className="text-xl font-serif font-semibold mb-6">Resumen</h2>
                   <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
                     <span>Total</span><span className="text-primary">{formatPrice(cart.total)}</span>
-                    <span className="text-xs font-normal text-stone-500">IVA incluido</span>
                   </div>
                   <Button asChild className="w-full h-12 rounded-full"><Link href="/checkout">Proceder al Pago <ArrowRight className="ml-2 w-5 h-5" /></Link></Button>
                 </Card>
