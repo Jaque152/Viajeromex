@@ -152,7 +152,7 @@ export function Experiences() {
               </svg>
             </div>
             <h4 className="font-medium mb-1">Reserva Fácil</h4>
-            <p className="text-sm text-muted-foreground">En línea 24/7</p>
+            <p className="text-sm text-muted-foreground">En línea</p>
           </div>
           <div className="text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">

@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // IMPORTANTE: En modo prueba (sin dominio comprado),
 // Resend solo deja enviar aL correo de registro.
-const DEMO_RECIPIENT_EMAIL = 'jaknet.software.dev@gmail.com';
+const DEMO_RECIPIENT_EMAIL = 'zenithmexico26@gmail.com';
 
 interface EmailItem {
   experience_title: string;
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       htmlContent = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; color: #444; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
           <div style="background-color: ${primaryColor}; padding: 30px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">Zineth México</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">Zenith México</h1>
           </div>
 
           <div style="padding: 40px 30px;">

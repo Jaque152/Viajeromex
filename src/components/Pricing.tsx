@@ -67,7 +67,7 @@ export function Pricing() {
                   </li>
                   <li className="flex items-center gap-3 text-sm text-muted-foreground">
                     <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                    Atención dedicada 24/7
+                    Atención dedicada 
                   </li>
                   <li className="flex items-center gap-3 text-sm text-muted-foreground">
                     <Check className="w-5 h-5 text-primary flex-shrink-0" />
@@ -87,22 +87,6 @@ export function Pricing() {
               </p>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Trust indicators */}
-        <div className="flex flex-wrap justify-center gap-8 mt-16 pt-8 border-t border-border/30">
-          <div className="text-center">
-            <div className="text-2xl font-serif font-bold text-foreground">500+</div>
-            <div className="text-sm text-muted-foreground">Viajes diseñados</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-serif font-bold text-foreground">98%</div>
-            <div className="text-sm text-muted-foreground">Clientes satisfechos</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-serif font-bold text-foreground">24h</div>
-            <div className="text-sm text-muted-foreground">Tiempo de respuesta</div>
-          </div>
         </div>
       </div>
     </section>
