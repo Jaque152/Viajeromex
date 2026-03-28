@@ -4,6 +4,7 @@ import { Experiences } from "@/components/Experiences";
 import { Pricing } from "@/components/Pricing";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { FifaSection } from "@/components/FifaSection";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <Header />
       <Hero />
       <Experiences />
+      <FifaSection/>
       <Pricing />
       <Contact />
       <Footer />

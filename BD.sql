@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS public.service_levels CASCADE;
 DROP TABLE IF EXISTS public.customers CASCADE;
 DROP TABLE IF EXISTS public.contact_messages CASCADE;
 DROP TABLE IF EXISTS public.custom_quotes CASCADE;
+DROP TABLE IF EXISTS public.fifa_experiences CASCADE;
 
 -- Tablas de Catálogos
 CREATE TABLE public.categories (
@@ -158,6 +159,7 @@ TRUNCATE TABLE
   public.service_levels,
   public.custom_quotes,
   public.customers
+  public.fifa_experiences
 RESTART IDENTITY CASCADE;
 
 -- ==========================================
@@ -327,10 +329,8 @@ INSERT INTO public.activity_packages (activity_id, level_id, price, features) VA
 
 
 -- ==========================================
--- 4. INSERTAR DETALLES DE LOS PAQUETES
--- ==========================================
-
-
+-- 5. INSERTAR DETALLES DE LAS EXPERIENCIAS
+-- =========================================
 -- 1. CABO SAN LUCAS: CUATRIMOTOS
 UPDATE public.activities SET 
   images = '["https://media.tacdn.com/media/attractions-splice-spp-674x446/12/6d/be/63.jpg"]'::jsonb,
@@ -538,3 +538,24 @@ UPDATE public.activities SET
   requirements = '["Ropa cómoda", "Calzado cerrado para zonas pedregosas", "Únicamente repelente orgánico"]'::jsonb,
   restrictions = '["Menores de 5 años"]'::jsonb
 WHERE slug = 'abejas-mayas-xkopek';
+
+
+-- ==========================================
+-- 6. INSERTAR DETALLES MUNDIAL
+-- =========================================
+CREATE TABLE public.fifa_experiences (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR NOT NULL,
+  subtitle VARCHAR,
+  description TEXT,
+  items JSONB DEFAULT '[]'::jsonb,
+  image_url TEXT,
+  order_index INTEGER DEFAULT 0
+);
+-- Insertar la información detallada
+INSERT INTO public.fifa_experiences (title, subtitle, description, items, image_url, order_index) VALUES
+('Estadios y Museos', 'Recorridos Históricos', 'Visitas guiadas a los templos del fútbol y acceso a zonas restringidas.', '["Visitas guiadas a estadios FIFA y campos históricos", "Acceso a vestidores y zonas VIP (fotos y experiencias interactivas)", "Recorridos por museos de fútbol y exhibiciones temáticas"]', 'https://cdn.aarp.net/content/dam/aarp/entertainment/television/2017/07/1140-world-cup-trophy-ball-trivia-esp.jpg', 1),
+('Fan Experiences', 'Interacción Total', 'Zonas de realidad virtual y encuentros con leyendas del deporte.', '["Clínicas de fútbol y retos de habilidades", "Realidad virtual de partidos históricos", "Meet & greet con leyendas"]', 'https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=800&q=80', 2),
+('Viewing Parties', 'Eventos en Vivo', 'Proyección de partidos en pantallas gigantes con ambiente temático.', '["Pantallas gigantes", "Trivia y juegos recreativos", "Catering temático y snacks"]', 'https://www.shutterstock.com/image-photo/watching-match-tv-home-2friends-260nw-2472315955.jpg', 3),
+('Cultura y Ciudad', 'Recorridos Urbanos', 'Explora el lado futbolero de las sedes mundialistas.', '["Street football tours", "Bares deportivos icónicos", "Arte urbano y murales de fútbol"]', 'https://ovaciones.com/wp-content/uploads/2025/09/por-1200-x-630-px-2025-09-04T225525.393.png', 4),
+('Experiencias educativas', 'Historia del fútbol y estrategias de juego', 'Descubre más acerca del fútbol', '["Talleres", "Trivia con premios"]', 'https://universidadeuropea.com/resources/media/images/tactica-fubtol-800x450.width-640.jpg', 5);

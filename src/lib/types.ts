@@ -156,3 +156,12 @@ export interface Cart {
   items: CartItem[];
   total: number;
 }
+
+export interface FifaExp {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  items: string[];
+  image_url: string;
+}
