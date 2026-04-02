@@ -35,13 +35,11 @@ export function Contact() {
       alert("Hubo un error al enviar tu mensaje. Intenta de nuevo.");
     } else {
       alert("¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.");
-      // Aquí puedes limpiar el formulario si quieres
+      // limpiar el formulario 
       setFormData({ name: '', email: '', phone: '', message: '' });
     }
   };
-    // Handle form submission
-    //console.log(formData);
-
+    
   return (
     <section id="contacto" className="py-24 lg:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 via-transparent to-secondary/30" />

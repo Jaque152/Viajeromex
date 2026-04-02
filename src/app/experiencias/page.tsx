@@ -11,20 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from '@/lib/supabase';
 import { MapPin, Search, ArrowRight, Loader2 } from "lucide-react";
-import { Experience } from "@/lib/types";
+import { Experience, SupabaseExperienceResponse } from "@/lib/types";
 
-// Interfaz auxiliar adaptada a la BD
-interface SupabaseExperienceResponse {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  location: string;
-  images: string[]; 
-  category_id: number;
-  categories: { id: number; name: string; slug: string } | null;
-  activity_packages: { price: number }[];
-}
 
 type ExperienceWithPrice = Experience & { displayPrice: number };
 
@@ -45,7 +33,6 @@ function ExperienciasContent() {
         const { data: catData } = await supabase.from('categories').select('*');
         if (catData) setCategories(catData);
 
-        // Actualizamos el select para traer "images"
         const { data: actData } = await supabase
           .from('activities')
           .select(`

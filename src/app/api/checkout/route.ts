@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { CartItem } from '@/lib/types';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; 
@@ -18,11 +19,11 @@ const getEtominHeaders = (extraHeaders = {}) => ({
   'Content-Type': 'application/json',
   'Accept': 'application/json',
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-  'Origin': 'https://tudominio.com', 
+  'Origin': 'https://zenithmex.com', 
   ...extraHeaders
 });
 
-async function safeEtominFetch(url: string, options: any, stepName: string) {
+async function safeEtominFetch(url: string, options: RequestInit, stepName: string) {
   const res = await fetch(url, options);
   const text = await res.text(); 
   
@@ -37,7 +38,7 @@ async function safeEtominFetch(url: string, options: any, stepName: string) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { contactInfo, billingInfo, needsInvoice, cart, cardInfo, formattedTotal } = body;
+    const { contactInfo, billingInfo, needsInvoice, cart, cardInfo, formattedTotal, manualFolioData} = body;
 
     const tempReferenceId = `REF-${Date.now()}`;
 
@@ -81,14 +82,16 @@ export async function POST(req: Request) {
     // ==========================================
     // 3. PROCESAR LA VENTA (/sale)
     // ==========================================
-    
-   
-    const etominItems = cart.items.map((item: any) => ({
-      title: item.experience.title,
-      amount: item.pricePerPerson, // Precio Unitario
-      quantity: item.people,
-      id: item.packageId.toString(),
+    const etominItems = manualFolioData 
+      ? [{ title: `Pago Cotización: ${manualFolioData.folio}`, amount: manualFolioData.amount, quantity: 1, id: manualFolioData.folio }]
+      : cart.items.map((item: CartItem) => ({
+          title: item.experience.title,
+          amount: item.pricePerPerson,
+          quantity: item.people,
+          id: item.packageId.toString(),
     }));
+
+    const finalAmountToCharge = manualFolioData ? manualFolioData.amount : cart.total;
 
     const salePayload = {
       amount: Number(cart.total.toFixed(2)),
@@ -113,7 +116,7 @@ export async function POST(req: Request) {
         cvv: cardInfo.cvv
       },
       items: etominItems,
-      redirectUrl: 'https://tudominio.com' 
+      redirectUrl: 'https://zenithmex.com' 
     };
 
     const saleData = await safeEtominFetch(`${ETOMIN_BASE_URL}/sale`, {
@@ -121,12 +124,13 @@ export async function POST(req: Request) {
       headers: getEtominHeaders({ 'Authorization': `Bearer ${authToken}` }),
       body: JSON.stringify(salePayload)
     }, 'Procesar Venta');
+
+    
     
     // Etomin puede devolver 'APPROVED', 'PENDING' o 'DECLINED'
     if (saleData.status !== 'APPROVED' && saleData.status !== 'PENDING') {
       // Imprimirá en terminal todo lo que Etomin contestó
       console.error("❌ DETALLE DEL RECHAZO ETOMIN:", saleData); 
-      // mensaje real del banco
       throw new Error(`Pago declinado: ${saleData.message || saleData.responseCode || 'Tarjeta rechazada'}`);
     }
 
@@ -149,7 +153,8 @@ export async function POST(req: Request) {
       .from('bookings')
       .insert({
         customer_id: customer.id,
-        total_amount: cart.total,
+        session_id: manualFolioData ? manualFolioData.folio : null, //para pago-folio
+        total_amount: finalAmountToCharge,
         payment_status: 'paid',
         transaction_id: saleData.transactionId || saleData.authorizationNumber || tempReferenceId,
         payment_provider: 'etomin',
@@ -163,9 +168,21 @@ export async function POST(req: Request) {
       })
       .select().single();
 
+    if (!manualFolioData && cart.items.length > 0) {
+      const bookingItems = cart.items.map((item: CartItem) => ({
+        booking_id: booking.id,
+        package_id: item.packageId,
+        scheduled_date: item.date,
+        pax_qty: item.people,
+        unit_price: item.pricePerPerson
+      }));
+      const { error: itemsError } = await supabase.from('booking_items').insert(bookingItems);
+      if (itemsError) throw new Error("Error guardando items de reserva.");
+    }
+    
     if (bookError) throw new Error("Error guardando reserva en la base de datos.");
 
-    const bookingItems = cart.items.map((item: any) => ({
+    const bookingItems = cart.items.map((item:CartItem) => ({
       booking_id: booking.id,
       package_id: item.packageId,
       scheduled_date: item.date,
@@ -205,7 +222,7 @@ export async function POST(req: Request) {
                 </tr>
               </thead>
               <tbody>
-                ${cart.items.map((item: any) => `
+                ${cart.items.map((item: CartItem) => `
                   <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 15px 0;">
                       <p style="margin: 0; font-weight: bold; color: #1c1917;">${item.experience.title}</p>
@@ -226,7 +243,7 @@ export async function POST(req: Request) {
         </div>
     `;
 
-    await resend.emails.send({
+    const { error: mailError } = await resend.emails.send({
       from: 'Zenith México <reservas@zenithmex.com>', 
       to: [contactInfo.email], 
       subject: `Confirmación de Compra: ${visualCode} - ¡Gracias por viajar con nosotros!`,
@@ -242,8 +259,9 @@ export async function POST(req: Request) {
       visualCode: visualCode
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error capturado en Backend:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 400 });
+    const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+    return NextResponse.json({ success: false, message: errorMessage }, { status: 400 });
   }
 }

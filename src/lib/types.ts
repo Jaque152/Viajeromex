@@ -165,3 +165,16 @@ export interface FifaExp {
   items: string[];
   image_url: string;
 }
+
+
+export interface SupabaseExperienceResponse {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  location: string;
+  images: string[]; 
+  category_id: number;
+  categories: { id: number; name: string; slug: string } | null;
+  activity_packages: { price: number }[];
+}

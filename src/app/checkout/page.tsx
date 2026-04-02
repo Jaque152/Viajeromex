@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -13,7 +14,16 @@ import { CheckCircle, Loader2, User, FileText, Lock, CreditCard } from "lucide-r
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const manualFolio = searchParams.get("folio");
+  const manualMonto = searchParams.get("monto");
+
   const { cart, clearCart } = useCart();
+  
+  // Condicional estricto para saber si es un pago manual
+  const isManualPayment = Boolean(manualFolio && manualMonto);
+  const finalTotal = isManualPayment ? parseFloat(manualMonto as string) : cart.total;
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
@@ -37,7 +47,7 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // 1. Enviar TODO a nuestro propio backend seguro (/api/checkout)
+      // 1. Enviar a backend seguro (/api/checkout)
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,9 +55,10 @@ export default function CheckoutPage() {
           contactInfo,
           billingInfo,
           needsInvoice,
-          cart,
+          cart: isManualPayment ? { items: [], total: finalTotal } : cart,
           cardInfo,
-          formattedTotal: formatPrice(cart.total) // Le pasamos el total formateado al back
+          formattedTotal: formatPrice(finalTotal), 
+          manualFolioData: isManualPayment ? { folio: manualFolio, amount: finalTotal } : null
         })
       });
 
@@ -57,14 +68,17 @@ export default function CheckoutPage() {
         throw new Error(data.message || "Error procesando el pago");
       }
 
-      // 2. Si todo salió bien, mostramos el éxito
+      // 2. Si todo salió bien, mostrar el éxito
       setConfirmationCode(data.visualCode);
       setShowSuccess(true);
-      clearCart();
+      if (!isManualPayment) {
+        clearCart();
+      }
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      alert(`Error al procesar el pago: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al procesar el pago: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
     }
@@ -172,26 +186,36 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-serif font-semibold mb-6 text-stone-800">Resumen de Compra</h2>
                 
                 <div className="space-y-3 mb-6">
-                  {cart.items.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span className="text-stone-600 truncate pr-4">{item.experience.title} (x{item.people})</span>
-                      <span className="font-medium text-stone-900">{formatPrice(item.totalPrice)}</span>
+                  {isManualPayment ? (
+                    <div className="flex justify-between items-center text-sm border-b border-stone-100 pb-3">
+                      <div>
+                        <span className="font-bold text-stone-800 block">Pago de Cotización</span>
+                        <span className="text-xs text-orange-600 font-mono font-bold tracking-widest">FOLIO: {manualFolio}</span>
+                      </div>
+                      <span className="font-bold text-stone-900">{formatPrice(finalTotal)}</span>
                     </div>
-                  ))}
+                  ) : (
+                    cart.items.map((item, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <span className="text-stone-600 truncate pr-4">{item.experience.title} (x{item.people})</span>
+                        <span className="font-medium text-stone-900">{formatPrice(item.totalPrice)}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 <div className="border-t border-stone-100 pt-4 mt-4">
                   <div className="flex justify-between items-end text-xl font-bold text-orange-700 mb-6">
                     <span>Total a Pagar</span>
                     <div className="text-right">
-                      <div>{formatPrice(cart.total)}</div>
+                      <div>{formatPrice(finalTotal)}</div>
                       <div className="text-xs font-normal text-stone-500">IVA incluido</div>
                     </div>
                   </div>
                   
                   <Button type="submit" disabled={!isFormValid || isProcessing} className="w-full bg-orange-600 hover:bg-orange-700 text-white h-14 rounded-full shadow-lg shadow-orange-200 gap-2 text-lg transition-all">
                     {isProcessing ? <Loader2 className="animate-spin w-5 h-5" /> : <Lock className="w-5 h-5" />}
-                    {isProcessing ? "Procesando pago..." : `Pagar ${formatPrice(cart.total)}`}
+                    {isProcessing ? "Procesando pago..." : `Pagar ${formatPrice(finalTotal)}`}
                   </Button>
                 </div>
               </Card>

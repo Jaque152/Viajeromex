@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   MapPin, Calendar, Users, Wallet, MessageSquare,
-  User, Mail, Phone, CheckCircle, Sparkles, Clock, Loader2
+  User, Mail, Phone, CheckCircle, Sparkles, Clock, Loader2,
+  ArrowRight
 } from "lucide-react";
 import { supabase } from '@/lib/supabase';
 
@@ -209,6 +210,16 @@ export default function CotizarPage() {
                 {isSubmitting ? "Enviando..." : "Solicitar Cotización"}
               </Button>
             </form>
+            <div className="max-w-2xl mx-auto mt-16 pt-12 border-t border-stone-200 text-center">
+              <h3 className="text-sm font-bold text-stone-500 tracking-widest uppercase mb-4">
+                ¿Ya cuentas con una cotización de tu asesor?
+              </h3>
+              <Button asChild variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-white transition-all h-12 px-8">
+                <Link href="/pago-folio" className="flex items-center gap-2">
+                  Ir a Pagar Folio <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </main>
