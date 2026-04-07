@@ -1,3 +1,4 @@
+// src/app/[locale]/experiencias/[id]/page.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext";
 import { Experience, ActivityPackage } from "@/lib/types"; 
+import { T } from "@/components/T";
 import {
   MapPin, Check, Minus, Plus, ShoppingCart, Loader2, Clock, AlertTriangle, Info, ListChecks
 } from "lucide-react";
@@ -129,35 +131,32 @@ export default function ExperienceDetailPage() {
           <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
             
             <div className="lg:col-span-2 space-y-10">
-              {/* Imagen Principal */}
               <div className="aspect-[16/9] rounded-3xl overflow-hidden shadow-xl bg-stone-100">
                 <img src={mainImage} alt={experience.title} className="w-full h-full object-cover" />
               </div>
 
-              {/* Título y Descripción */}
               <div>
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                   <Badge variant="secondary" className="bg-orange-50 text-orange-700">
-                    {experience.categories?.name || "Aventura"}
+                    <T>{experience.categories?.name || "Aventura"}</T>
                   </Badge>
                   <span className="flex items-center gap-1 text-sm text-stone-500 font-medium">
-                    <MapPin className="w-4 h-4 text-orange-500" /> {experience.location}
+                    <MapPin className="w-4 h-4 text-orange-500" /> <T>{experience.location}</T>
                   </span>
                   {experience.duration && (
                     <span className="flex items-center gap-1 text-sm text-stone-500 font-medium ml-2">
-                      <Clock className="w-4 h-4 text-orange-500" /> {experience.duration}
+                      <Clock className="w-4 h-4 text-orange-500" /> <T>{experience.duration}</T>
                     </span>
                   )}
                 </div>
-                <h1 className="text-4xl font-serif font-bold mb-4 text-stone-900">{experience.title}</h1>
-                <p className="text-lg text-stone-600 leading-relaxed">{experience.description}</p>
+                <h1 className="text-4xl font-serif font-bold mb-4 text-stone-900"><T>{experience.title}</T></h1>
+                <p className="text-lg text-stone-600 leading-relaxed"><T>{experience.description}</T></p>
               </div>
 
-              {/* Itinerario (Si existe) */}
               {experience.itinerary && experience.itinerary.length > 0 && (
                 <div className="pt-8 border-t border-stone-100">
                   <h2 className="text-2xl font-serif font-bold mb-6 flex items-center gap-2">
-                    <ListChecks className="text-orange-600" /> Itinerario
+                    <ListChecks className="text-orange-600" /> <T>Itinerario</T>
                   </h2>
                   <ol className="relative border-l border-stone-200 ml-3 space-y-6">
                     {experience.itinerary.map((step, index) => (
@@ -165,43 +164,40 @@ export default function ExperienceDetailPage() {
                         <span className="absolute flex items-center justify-center w-6 h-6 bg-orange-100 rounded-full -left-3 ring-8 ring-white">
                           <span className="text-xs font-bold text-orange-800">{index + 1}</span>
                         </span>
-                        <h3 className="font-medium text-stone-800 pt-0.5">{step}</h3>
+                        <h3 className="font-medium text-stone-800 pt-0.5"><T>{step}</T></h3>
                       </li>
                     ))}
                   </ol>
                 </div>
               )}
 
-              {/* Requerimientos y Restricciones */}
               <div className="grid md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
-                {/* Requerimientos */}
                 {experience.requirements && experience.requirements.length > 0 && (
                   <div>
                     <h3 className="text-lg font-serif font-bold mb-4 flex items-center gap-2 text-stone-800">
-                      <Info className="w-5 h-5 text-blue-500" /> Qué llevar / Requisitos
+                      <Info className="w-5 h-5 text-blue-500" /> <T>Qué llevar / Requisitos</T>
                     </h3>
                     <ul className="space-y-2">
                       {experience.requirements.map((req, index) => (
                         <li key={index} className="flex items-start gap-2 text-sm text-stone-600">
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                          {req}
+                          <T>{req}</T>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                {/* Restricciones */}
                 {experience.restrictions && experience.restrictions.length > 0 && (
                   <div>
                     <h3 className="text-lg font-serif font-bold mb-4 flex items-center gap-2 text-stone-800">
-                      <AlertTriangle className="w-5 h-5 text-red-500" /> Restricciones
+                      <AlertTriangle className="w-5 h-5 text-red-500" /> <T>Restricciones</T>
                     </h3>
                     <ul className="space-y-2">
                       {experience.restrictions.map((res, index) => (
                         <li key={index} className="flex items-start gap-2 text-sm text-stone-600">
                           <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0" />
-                          {res}
+                          <T>{res}</T>
                         </li>
                       ))}
                     </ul>
@@ -209,44 +205,41 @@ export default function ExperienceDetailPage() {
                 )}
               </div>
 
-              {/* Inclusiones Generales */}
               {experience.included_general && experience.included_general.length > 0 && (
                 <div className="pt-8 border-t border-stone-100">
-                  <h2 className="text-2xl font-serif font-bold mb-6">Lo que incluye en general</h2>
+                  <h2 className="text-2xl font-serif font-bold mb-6"><T>Lo que incluye en general</T></h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     {experience.included_general.map((item, index) => (
                       <div key={index} className="flex items-start gap-3 p-4 rounded-xl bg-stone-50 border border-stone-100">
                         <Check className="w-5 h-5 text-stone-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-stone-700">{item}</span>
+                        <span className="text-sm text-stone-700"><T>{item}</T></span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Inclusiones del Paquete Específico */}
               <div className="pt-8 border-t border-stone-100">
                 <h2 className="text-2xl font-serif font-bold mb-6">
-                  Adicionales del nivel <span className="text-orange-600">{selectedPackage?.service_levels?.name}</span>
+                  <T>Adicionales del nivel</T> <span className="text-orange-600"><T>{selectedPackage?.service_levels?.name || "Básico"}</T></span>
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {packageInclusions.length > 0 ? (
                     packageInclusions.map((item, index) => (
                       <div key={index} className="flex items-start gap-3 p-4 rounded-xl bg-orange-50/50 border border-orange-100 transition-all">
                         <Check className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-stone-800 font-medium">{item}</span>
+                        <span className="text-sm text-stone-800 font-medium"><T>{item}</T></span>
                       </div>
                     ))
                   ) : (
                     <p className="text-sm text-stone-500 italic bg-stone-50 p-4 rounded-xl border border-stone-100">
-                      Este nivel base te da acceso al tour general. Selecciona un nivel superior para ver más beneficios.
+                      <T>Este nivel base te da acceso al tour general. Selecciona un nivel superior para ver más beneficios.</T>
                     </p>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* TARJETA DE RESERVA */}
             <div className="lg:col-span-1">
               <div className="sticky top-28">
                 <Card className="border-none shadow-2xl bg-stone-50/50 rounded-3xl overflow-hidden">
@@ -255,17 +248,17 @@ export default function ExperienceDetailPage() {
                       <span className="text-4xl font-black text-orange-700">
                         {formatPrice(totalPrice)}
                       </span>
-                      <span className="text-xs text-stone-400 font-bold uppercase tracking-widest ml-1">IVA incluido</span>
+                      <span className="text-xs text-stone-400 font-bold uppercase tracking-widest ml-1"><T>IVA incluido</T></span>
                     </div>
 
                     <div className="space-y-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-stone-500 tracking-widest">Fecha</label>
+                        <label className="text-[10px] font-black uppercase text-stone-500 tracking-widest"><T>Fecha</T></label>
                         <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} min={minDateStr} className="rounded-xl h-12 bg-white font-medium" />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-stone-500 tracking-widest">Personas</label>
+                        <label className="text-[10px] font-black uppercase text-stone-500 tracking-widest"><T>Personas</T></label>
                         <div className="flex items-center justify-between bg-white p-1 rounded-xl border h-12 shadow-sm">
                           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg hover:bg-stone-100" onClick={() => setPeople(Math.max(1, people - 1))}><Minus className="w-4 h-4"/></Button>
                           <span className="font-bold text-lg">{people}</span>
@@ -275,8 +268,8 @@ export default function ExperienceDetailPage() {
 
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-stone-500 tracking-widest flex items-center justify-between">
-                          Nivel de Paquete
-                          <span className="text-orange-500 font-normal capitalize">Selecciona uno</span>
+                          <T>Nivel de Paquete</T>
+                          <span className="text-orange-500 font-normal capitalize"><T>Selecciona uno</T></span>
                         </label>
                         {packages.map((pkg) => (
                           <div 
@@ -288,10 +281,10 @@ export default function ExperienceDetailPage() {
                                 : "border-stone-200 bg-white/60 hover:border-orange-300"
                             }`}
                           >
-                            <span className="font-bold text-sm text-stone-800">{pkg.service_levels?.name}</span>
+                            <span className="font-bold text-sm text-stone-800"><T>{pkg.service_levels?.name || "Básico"}</T></span>
                             <span className="text-right">
                               <span className="text-xs font-black text-orange-600 block">{formatPrice(Number(pkg.price))}</span>
-                              <span className="font-normal text-stone-400 text-[9px] uppercase tracking-wider block">x persona</span>
+                              <span className="font-normal text-stone-400 text-[9px] uppercase tracking-wider block"><T>x persona</T></span>
                             </span>
                           </div>
                         ))}
@@ -304,7 +297,7 @@ export default function ExperienceDetailPage() {
                       disabled={!selectedDate || isAdding}
                     >
                       {isAdding ? <Loader2 className="animate-spin w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />} 
-                      {isAdding ? "Procesando..." : "Agregar al carrito"}
+                      {isAdding ? <T>Procesando...</T> : <T>Agregar al carrito</T>}
                     </Button>
                   </CardContent>
                 </Card>

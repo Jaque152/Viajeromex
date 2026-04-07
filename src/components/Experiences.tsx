@@ -1,9 +1,10 @@
 "use client";
-
+import { useLocale } from 'next-intl';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, Mountain, Waves, Theater, Footprints } from "lucide-react";
 import Link from "next/link";
+import { T } from "@/components/T";
 
 const experiences = [
   {
@@ -45,6 +46,7 @@ const experiences = [
 ];
 
 export function Experiences() {
+  const locale = useLocale();
   return (
     <section id="experiencias" className="py-24 lg:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/20 to-transparent" />
@@ -53,15 +55,15 @@ export function Experiences() {
         {/* Section Header */}
         <div className="max-w-2xl mb-16">
           <Badge variant="outline" className="mb-4 rounded-full px-4 py-1 border-primary/30 text-primary">
-            Nuestras Experiencias
+            <T>Nuestras Experiencias</T>
           </Badge>
           <h2 className="text-4xl md:text-5xl font-serif font-semibold mb-6">
-            Vive el México que{" "}
-            <span className="text-gradient">siempre soñaste</span>
+            <T>Vive el México que</T>{" "}
+            <span className="text-gradient"><T>siempre soñaste</T></span>
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Experiencias únicas diseñadas para los amantes de la aventura y la cultura.
-            Te conectamos con las mejores actividades guiadas por expertos.
+            <T>Experiencias únicas diseñadas para los amantes de la aventura y la cultura.
+            Te conectamos con las mejores actividades guiadas por expertos.</T>
           </p>
         </div>
 
@@ -70,7 +72,7 @@ export function Experiences() {
           {experiences.map((exp, index) => (
             <Link
               key={exp.id}
-              href={`/experiencias?categoria=${exp.slug}`}
+              href={`/${locale}/experiencias?categoria=${exp.slug}`}
               className="block group"
             >
               <Card
@@ -90,20 +92,20 @@ export function Experiences() {
                       <div>
                         <div className="flex items-start justify-between mb-4">
                           <Badge variant="secondary" className="text-xs">
-                            {exp.tag}
+                            <T>{exp.tag}</T>
                           </Badge>
                           <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
                         </div>
                         <h3 className="text-xl font-serif font-semibold mb-3 group-hover:text-primary transition-colors">
-                          {exp.title}
+                          <T>{exp.title}</T>
                         </h3>
                         <p className="text-muted-foreground text-sm leading-relaxed">
-                          {exp.description}
+                          <T>{exp.description}</T>
                         </p>
                       </div>
                       <div className="mt-4 pt-4 border-t border-border/50">
                         <span className="text-sm text-primary font-medium group-hover:underline">
-                          Ver experiencias →
+                         <T> Ver experiencias →</T>
                         </span>
                       </div>
                     </div>
@@ -117,10 +119,10 @@ export function Experiences() {
         {/* View All Button */}
         <div className="text-center mt-12">
           <Link
-            href="/experiencias"
+            href={`/${locale}/experiencias`}
             className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
           >
-            Ver Todas las Experiencias
+            <T>Ver Todas las Experiencias</T>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
@@ -133,8 +135,8 @@ export function Experiences() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h4 className="font-medium mb-1">Guías Certificados</h4>
-            <p className="text-sm text-muted-foreground">Expertos locales</p>
+            <h4 className="font-medium mb-1"><T>Guías Certificados</T></h4>
+            <p className="text-sm text-muted-foreground"><T>Expertos locales</T></p>
           </div>
           <div className="text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -142,8 +144,8 @@ export function Experiences() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h4 className="font-medium mb-1">100% Seguro</h4>
-            <p className="text-sm text-muted-foreground">Viajes protegidos</p>
+            <h4 className="font-medium mb-1"><T>100% Seguro</T></h4>
+            <p className="text-sm text-muted-foreground"><T>Viajes protegidos</T></p>
           </div>
           <div className="text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -151,8 +153,8 @@ export function Experiences() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h4 className="font-medium mb-1">Reserva Fácil</h4>
-            <p className="text-sm text-muted-foreground">En línea</p>
+            <h4 className="font-medium mb-1"><T>Reserva Fácil</T></h4>
+            <p className="text-sm text-muted-foreground"><T>En línea</T></p>
           </div>
           <div className="text-center">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -160,8 +162,8 @@ export function Experiences() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h4 className="font-medium mb-1">Experiencias Únicas</h4>
-            <p className="text-sm text-muted-foreground">Personalizadas</p>
+            <h4 className="font-medium mb-1"><T>Experiencias Únicas</T></h4>
+            <p className="text-sm text-muted-foreground"><T>Personalizadas</T></p>
           </div>
         </div>
       </div>

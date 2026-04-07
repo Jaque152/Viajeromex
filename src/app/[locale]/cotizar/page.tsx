@@ -1,5 +1,5 @@
 "use client";
-
+import { useLocale } from 'next-intl';
 import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/Header";
@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { T } from "@/components/T";
+import { useT } from "@/hooks/useT";
 import {
   MapPin, Calendar, Users, Wallet, MessageSquare,
-  User, Mail, Phone, CheckCircle, Sparkles, Clock, Loader2,
-  ArrowRight
+  User, CheckCircle, Sparkles, Loader2, ArrowRight
 } from "lucide-react";
 import { supabase } from '@/lib/supabase';
 
@@ -24,7 +25,14 @@ const BUDGET_OPTIONS = [
   "Más de $100,000 MXN",
 ];
 
+// componente para traducir opciones dinámicas 
+function TranslatedOption({ value }: { value: string }) {
+  const translatedText = useT(value);
+  return <option value={value}>{translatedText}</option>;
+}
+
 export default function CotizarPage() {
+  const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [quoteCode, setQuoteCode] = useState("");
@@ -42,6 +50,14 @@ export default function CotizarPage() {
     phone: "",
   });
 
+  const phDestination = useT("Ej: Oaxaca, Riviera Maya...");
+  const phRequirements = useT("¿Qué experiencias buscas?");
+  const phFirstName = useT("Nombre *");
+  const phLastName = useT("Apellidos");
+  const phEmail = useT("Email *");
+  const phPhone = useT("Teléfono *");
+  const phSelectRange = useT("Selecciona un rango");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
@@ -51,7 +67,6 @@ export default function CotizarPage() {
       const customer_name = `${formData.firstName} ${formData.lastName}`.trim();
       const visualQuoteCode = `COT-${Date.now().toString(36).toUpperCase()}`;
 
-      // 1. Insertar en Supabase (Tabla custom_quotes)
       const { error: dbError } = await supabase
         .from('custom_quotes')
         .insert([
@@ -71,12 +86,12 @@ export default function CotizarPage() {
 
       if (dbError) throw dbError;
 
-      // 2. Enviar Correo de Confirmación vía Resend API
       await fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'QUOTE', // Indica que use el diseño de cotización
+          type: 'QUOTE',
+          locale: locale,
           email: formData.email,
           customerName: formData.firstName,
           destination: formData.destination,
@@ -116,16 +131,16 @@ export default function CotizarPage() {
               <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-green-600" />
               </div>
-              <h1 className="text-2xl font-serif font-semibold mb-2">¡Solicitud Recibida!</h1>
+              <h1 className="text-2xl font-serif font-semibold mb-2"><T>¡Solicitud Recibida!</T></h1>
               <p className="text-muted-foreground mb-6">
-                Hola <strong>{formData.firstName}</strong>, hemos enviado un correo a <strong>{formData.email}</strong> confirmando tu solicitud.
+                <T>Hola</T> <strong>{formData.firstName}</strong>, <T>hemos enviado un correo a</T> <strong>{formData.email}</strong> <T>confirmando tu solicitud.</T>
               </p>
               <div className="p-4 bg-secondary/50 rounded-lg mb-6 text-left border border-border">
-                <p className="text-sm text-muted-foreground mb-1">Folio de seguimiento</p>
+                <p className="text-sm text-muted-foreground mb-1"><T>Folio de seguimiento</T></p>
                 <p className="font-mono font-semibold text-lg">{quoteCode}</p>
               </div>
               <Button asChild className="w-full bg-primary hover:bg-primary/90 rounded-full">
-                <Link href="/">Volver al Inicio</Link>
+                <Link href={`/${locale}/`}><T>Volver al Inicio</T></Link>
               </Button>
             </CardContent>
           </Card>
@@ -142,13 +157,13 @@ export default function CotizarPage() {
         <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 lg:py-24">
           <div className="container mx-auto px-4 lg:px-8 text-center">
             <Badge variant="outline" className="mb-4 rounded-full px-4 py-1 border-primary/30 text-primary bg-white">
-              <Sparkles className="w-3 h-3 mr-1" /> Viaje a Tu Medida
+              <Sparkles className="w-3 h-3 mr-1" /> <T>Viaje a Tu Medida</T>
             </Badge>
             <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-6">
-              Diseñamos tu <span className="text-primary">aventura perfecta</span>
+              <T>Diseñamos tu</T> <span className="text-primary"><T>aventura perfecta</T></span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Cuéntanos tu idea y crearemos un itinerario único adaptado a ti.
+              <T>Cuéntanos tu idea y crearemos un itinerario único adaptado a ti.</T>
             </p>
           </div>
         </section>
@@ -159,35 +174,35 @@ export default function CotizarPage() {
               <Card className="border-none shadow-sm">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-serif font-semibold mb-6 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-primary" /> Detalles del Viaje
+                    <MapPin className="w-5 h-5 text-primary" /> <T>Detalles del Viaje</T>
                   </h2>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
-                      <label className="text-sm font-medium mb-2 block">¿A dónde quieres ir? *</label>
-                      <Input value={formData.destination} onChange={(e) => setFormData({ ...formData, destination: e.target.value })} placeholder="Ej: Oaxaca, Riviera Maya..." required />
+                      <label className="text-sm font-medium mb-2 block"><T>¿A dónde quieres ir? *</T></label>
+                      <Input value={formData.destination} onChange={(e) => setFormData({ ...formData, destination: e.target.value })} placeholder={phDestination} required />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Calendar className="w-4 h-4" /> Inicio *</label>
+                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Calendar className="w-4 h-4" /> <T>Inicio *</T></label>
                       <Input type="date" value={formData.startDate} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} min={minDateStr} required />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Calendar className="w-4 h-4" /> Regreso</label>
+                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Calendar className="w-4 h-4" /> <T>Regreso</T></label>
                       <Input type="date" value={formData.endDate} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} min={formData.startDate || minDateStr} />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Users className="w-4 h-4" /> Viajeros</label>
+                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Users className="w-4 h-4" /> <T>Viajeros</T></label>
                       <Input type="number" value={formData.travelers} onChange={(e) => setFormData({ ...formData, travelers: parseInt(e.target.value) || 1 })} min={1} />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Wallet className="w-4 h-4" /> Presupuesto</label>
+                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><Wallet className="w-4 h-4" /> <T>Presupuesto</T></label>
                       <select value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
-                        <option value="">Selecciona un rango</option>
-                        {BUDGET_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                        <option value="">{phSelectRange}</option>
+                        {BUDGET_OPTIONS.map((o) => <TranslatedOption key={o} value={o} />)}
                       </select>
                     </div>
                     <div className="md:col-span-2">
-                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Requerimientos</label>
-                      <Textarea value={formData.requirements} onChange={(e) => setFormData({ ...formData, requirements: e.target.value })} placeholder="¿Qué experiencias buscas?" rows={4} />
+                      <label className="text-sm font-medium mb-2 block flex items-center gap-2"><MessageSquare className="w-4 h-4" /> <T>Requerimientos</T></label>
+                      <Textarea value={formData.requirements} onChange={(e) => setFormData({ ...formData, requirements: e.target.value })} placeholder={phRequirements} rows={4} />
                     </div>
                   </div>
                 </CardContent>
@@ -195,28 +210,28 @@ export default function CotizarPage() {
 
               <Card className="border-none shadow-sm">
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-serif font-semibold mb-6 flex items-center gap-2"><User className="w-5 h-5 text-primary" /> Datos de Contacto</h2>
+                  <h2 className="text-xl font-serif font-semibold mb-6 flex items-center gap-2"><User className="w-5 h-5 text-primary" /> <T>Datos de Contacto</T></h2>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <Input value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} placeholder="Nombre *" required />
-                    <Input value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} placeholder="Apellidos" />
-                    <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email *" required />
-                    <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="Teléfono *" required />
+                    <Input value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} placeholder={phFirstName} required />
+                    <Input value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} placeholder={phLastName} />
+                    <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={phEmail} required />
+                    <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder={phPhone} required />
                   </div>
                 </CardContent>
               </Card>
 
               <Button type="submit" disabled={!isFormValid || isSubmitting} className="w-full h-14 rounded-full text-lg shadow-lg">
                 {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
-                {isSubmitting ? "Enviando..." : "Solicitar Cotización"}
+                {isSubmitting ? <T>Enviando...</T> : <T>Solicitar Cotización</T>}
               </Button>
             </form>
             <div className="max-w-2xl mx-auto mt-16 pt-12 border-t border-stone-200 text-center">
               <h3 className="text-sm font-bold text-stone-500 tracking-widest uppercase mb-4">
-                ¿Ya cuentas con una cotización de tu asesor?
+                <T>¿Ya cuentas con una cotización de tu asesor?</T>
               </h3>
               <Button asChild variant="outline" className="rounded-full border-primary text-primary hover:bg-primary hover:text-white transition-all h-12 px-8">
-                <Link href="/pago-folio" className="flex items-center gap-2">
-                  Ir a Pagar Folio <ArrowRight className="w-4 h-4" />
+                <Link href={`/${locale}/pago-folio`} className="flex items-center gap-2">
+                  <T>Ir a Pagar Folio</T> <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
             </div>

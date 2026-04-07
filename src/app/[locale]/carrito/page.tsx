@@ -1,5 +1,6 @@
 "use client";
-
+import { T } from "@/components/T";
+import { useLocale } from 'next-intl';
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -28,6 +29,7 @@ export default function CarritoPage() {
     });
   };
 
+  const locale = useLocale();
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -35,14 +37,14 @@ export default function CarritoPage() {
         <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-2">Tu Carrito</h1>
+              <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-2"><T>Tu Carrito</T></h1>
               <p className="text-muted-foreground">
-                {cart.items.length} {cart.items.length === 1 ? "experiencia" : "experiencias"} seleccionadas
+                {cart.items.length} {cart.items.length === 1 ? <T>experiencia</T> : <T>experiencias</T>} <T>seleccionadas</T>
               </p>
             </div>
             {cart.items.length > 0 && (
               <Button variant="ghost" size="sm" onClick={clearCart} className="text-destructive hover:bg-destructive/10">
-                <Trash2 className="w-4 h-4 mr-2" /> Vaciar carrito
+                <Trash2 className="w-4 h-4 mr-2" /> <T>Vaciar carrito</T>
               </Button>
             )}
           </div>
@@ -50,8 +52,8 @@ export default function CarritoPage() {
           {cart.items.length === 0 ? (
             <Card className="border-dashed py-16 text-center">
               <ShoppingCart className="w-10 h-10 text-muted-foreground mx-auto mb-6" />
-              <h2 className="text-xl font-serif font-semibold mb-2">Tu carrito está vacío</h2>
-              <Button asChild className="mt-4"><Link href="/experiencias">Explorar Experiencias</Link></Button>
+              <h2 className="text-xl font-serif font-semibold mb-2"><T>Tu carrito está vacío</T></h2>
+              <Button asChild className="mt-4"><Link href={`/${locale}/experiencias`}><T>Explorar Experiencias</T></Link></Button>
             </Card>
           ) : (
             <div className="grid lg:grid-cols-3 gap-8">
@@ -71,8 +73,8 @@ export default function CarritoPage() {
                         <div className="flex-1 p-5">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <Badge variant="secondary" className="mb-2">{item.levelName}</Badge>
-                              <h3 className="text-lg font-serif font-semibold">{item.experience.title}</h3>
+                              <Badge variant="secondary" className="mb-2"><T>{item.levelName}</T></Badge>
+                              <h3 className="text-lg font-serif font-semibold"><T>{item.experience.title}</T></h3>
                             </div>
                             <button onClick={() => removeFromCart(item.packageId, item.date)} className="text-muted-foreground hover:text-destructive">
                               <Trash2 className="w-5 h-5" />
@@ -80,7 +82,7 @@ export default function CarritoPage() {
                           </div>
                           <div className="flex flex-wrap gap-4 text-sm text-stone-500 mb-4">
                             <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {item.experience.location}</span>
-                            <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {formatDate(item.date)}</span>
+                            <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> <T>{formatDate(item.date)}</T></span>
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4 bg-stone-50 p-1 rounded-md border">
@@ -89,7 +91,7 @@ export default function CarritoPage() {
                               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.packageId, item.date, item.people + 1)}><Plus className="w-3 h-3" /></Button>
                             </div>
                             <p className="text-xl font-bold text-primary">{formatPrice(item.totalPrice)}</p>
-                            <p className="text-[10px] text-stone-500">IVA incluido</p>
+                            <p className="text-[10px] text-stone-500"><T>IVA incluido</T></p>
                           </div>
                         </div>
                       </CardContent>
@@ -99,11 +101,11 @@ export default function CarritoPage() {
               </div>
               <div className="lg:col-span-1">
                 <Card className="sticky top-28 p-6">
-                  <h2 className="text-xl font-serif font-semibold mb-6">Resumen</h2>
+                  <h2 className="text-xl font-serif font-semibold mb-6"><T>Resumen</T></h2>
                   <div className="flex justify-between text-lg font-bold mb-6 pt-4 border-t">
-                    <span>Total</span><span className="text-primary">{formatPrice(cart.total)}</span>
+                    <span><T>Total</T></span><span className="text-primary">{formatPrice(cart.total)}</span>
                   </div>
-                  <Button asChild className="w-full h-12 rounded-full"><Link href="/checkout">Proceder al Pago <ArrowRight className="ml-2 w-5 h-5" /></Link></Button>
+                  <Button asChild className="w-full h-12 rounded-full"><Link href={`/${locale}/checkout`}><T>Proceder al Pago</T><ArrowRight className="ml-2 w-5 h-5" /></Link></Button>
                 </Card>
               </div>
             </div>

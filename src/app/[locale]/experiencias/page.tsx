@@ -1,5 +1,6 @@
+// src/app/[locale]/experiencias/page.tsx
 "use client";
-
+import { useLocale } from 'next-intl';
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -12,19 +13,21 @@ import { Input } from "@/components/ui/input";
 import { supabase } from '@/lib/supabase';
 import { MapPin, Search, ArrowRight, Loader2 } from "lucide-react";
 import { Experience, SupabaseExperienceResponse } from "@/lib/types";
-
+import { T } from "@/components/T";
+import { useT } from "@/hooks/useT";
 
 type ExperienceWithPrice = Experience & { displayPrice: number };
 
 function ExperienciasContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("categoria");
-
+  const locale = useLocale();
   const [experiences, setExperiences] = useState<ExperienceWithPrice[]>([]);
   const [categories, setCategories] = useState<{ id: number; name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [searchTerm, setSearchTerm] = useState("");
+  const phSearch = useT("Buscar experiencias...");
 
   useEffect(() => {
     async function fetchData() {
@@ -96,10 +99,10 @@ function ExperienciasContent() {
         <section className="bg-stone-50 py-16">
           <div className="container mx-auto px-4 lg:px-8">
             <Badge variant="outline" className="mb-4 rounded-full px-4 py-1 border-primary/30 text-primary">
-              Catálogo de Experiencias
+              <T>Catálogo de Experiencias</T>
             </Badge>
             <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-6 text-stone-900">
-              Descubre <span className="text-orange-600">aventuras únicas</span>
+              <T>Descubre</T> <span className="text-orange-600"><T>aventuras únicas</T></span>
             </h1>
           </div>
         </section>
@@ -113,7 +116,7 @@ function ExperienciasContent() {
                   size="sm"
                   onClick={() => setSelectedCategory(null)}
                   className="rounded-full"
-                >Todas</Button>
+                ><T>Todas</T></Button>
                 {categories.map((cat) => (
                   <Button
                     key={cat.id}
@@ -121,13 +124,13 @@ function ExperienciasContent() {
                     size="sm"
                     onClick={() => setSelectedCategory(cat.slug)}
                     className="rounded-full"
-                  >{cat.name}</Button>
+                  ><T>{cat.name}</T></Button>
                 ))}
               </div>
               <div className="relative w-full lg:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar experiencias..."
+                  placeholder={phSearch}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 rounded-full"
@@ -141,33 +144,32 @@ function ExperienciasContent() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredExperiences.map((exp) => {
-                // Extraer la primera imagen de forma segura
                 const thumbImage = exp.images?.length > 0 ? exp.images[0] : '/placeholder.jpg';
 
                 return (
-                  <Link key={exp.id} href={`/experiencias/${exp.id}`} className="group">
+                  <Link key={exp.id} href={`/${locale}/experiencias/${exp.id}`} className="group">
                     <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-none shadow-sm rounded-2xl">
                       <div className="aspect-[4/3] relative overflow-hidden">
                         <img src={thumbImage} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                         <Badge className="absolute top-4 left-4 bg-background/90 text-foreground border-none">
-                          {exp.categories?.name}
+                          <T>{exp.categories?.name || "Sin Categoría"}</T>
                         </Badge>
                       </div>
                       <CardContent className="p-5">
-                        <h3 className="text-lg font-serif font-semibold mb-2">{exp.title}</h3>
+                        <h3 className="text-lg font-serif font-semibold mb-2"><T>{exp.title}</T></h3>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
-                          <MapPin className="w-4 h-4" /> {exp.location}
+                          <MapPin className="w-4 h-4" /> <T>{exp.location}</T>
                         </div>
                         <div className="flex items-center justify-between pt-4 border-t">
                           <div>
-                            <p className="text-xs text-muted-foreground uppercase font-bold">Desde</p>
+                            <p className="text-xs text-muted-foreground uppercase font-bold"><T>Desde</T></p>
                             <p className="text-lg font-bold text-orange-600">
                               {formatPrice(exp.displayPrice)}
                             </p>
-                            <span className="text-xs font-normal text-stone-500">IVA incluido</span>
+                            <span className="text-xs font-normal text-stone-500"><T>IVA incluido</T></span>
                           </div>
                           <span className="flex items-center gap-1 text-sm text-primary font-medium group-hover:translate-x-1 transition-transform">
-                            Ver detalles <ArrowRight className="w-4 h-4" />
+                            <T>Ver detalles</T> <ArrowRight className="w-4 h-4" />
                           </span>
                         </div>
                       </CardContent>

@@ -1,5 +1,5 @@
 "use client";
-
+import { T } from "@/components/T";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,15 +49,15 @@ export function Contact() {
           {/* Left Content */}
           <div>
             <Badge variant="outline" className="mb-4 rounded-full px-4 py-1 border-primary/30 text-primary">
-              Atención al Cliente
+              <T>Atención al Cliente</T>
             </Badge>
             <h2 className="text-4xl md:text-5xl font-serif font-semibold mb-6">
-              Personalizamos cada detalle{" "}
+              <T>Personalizamos cada detalle</T>{" "}
               <span className="text-gradient">para ti</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-12 leading-relaxed">
-              ¿Tienes preguntas? ¿Necesitas ayuda?<br />
-              Nuestro equipo está listo para apoyarte.
+              <T>¿Tienes preguntas? ¿Necesitas ayuda?</T><br />
+              <T>Nuestro equipo está listo para apoyarte.</T>
             </p>
 
             {/* Contact Info Cards */}
@@ -68,7 +68,7 @@ export function Contact() {
                     <Mail className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium mb-1">Correo Electrónico</h4>
+                    <h4 className="font-medium mb-1"><T>Correo Electrónico</T></h4>
                     <a href="mailto:informes@zenithmex.com" className="text-muted-foreground hover:text-primary transition-colors">
                       informes@zenithmex.com
                     </a>
@@ -82,7 +82,7 @@ export function Contact() {
                     <Phone className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium mb-1">Teléfono</h4>
+                    <h4 className="font-medium mb-1"><T>Teléfono</T></h4>
                     <a href="tel:+525555555555" className="text-muted-foreground hover:text-primary transition-colors">
                       +52 55 5555 5555
                     </a>
@@ -96,7 +96,7 @@ export function Contact() {
                     <MapPin className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium mb-1">Ubicación</h4>
+                    <h4 className="font-medium mb-1"><T>Ubicación</T></h4>
                     <p className="text-muted-foreground">
                       Ciudad de México, México
                     </p>

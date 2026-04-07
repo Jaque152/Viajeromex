@@ -1,15 +1,16 @@
 "use client";
-
+import { useLocale } from 'next-intl';
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trophy, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { supabase } from '@/lib/supabase';
 import { FifaExp } from "@/lib/types";
+import { T } from "@/components/T";
 
 export function FifaSection() {
   const [fifaExps, setFifaExps] = useState<FifaExp[]>([]);
-
+  const locale = useLocale();
   useEffect(() => {
     async function loadFifaData() {
       const { data } = await supabase
@@ -31,20 +32,20 @@ export function FifaSection() {
               <span className="text-xs font-bold uppercase tracking-widest">Vive la FIFA 2026</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-serif font-semibold text-stone-900 mb-6">
-              ¿Cómo participar en <span className="text-primary">la gran fiesta?</span>
+              <T>¿Cómo participar en </T><span className="text-primary"><T>la gran fiesta?</T></span>
             </h2>
             <p className="text-stone-600 text-lg leading-relaxed mb-4">
-              Todas nuestras experiencias son personalizadas. Cuéntanos tu presupuesto y nosotros organizamos una aventura a tu medida.
+              <T>Todas nuestras experiencias son personalizadas. Cuéntanos tu presupuesto y nosotros organizamos una aventura a tu medida.</T>
             </p>
             <div className="flex flex-wrap gap-4 text-sm font-medium text-stone-500">
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /> Comodidad</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /> Diversión</span>
-              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /> Organización Profesional</span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /><T> Comodidad </T></span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /><T> Diversión </T></span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4 text-primary" /><T> Organización Profesional </T></span>
             </div>
           </div>
           
           <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-white h-14 px-10 text-lg shadow-lg shadow-orange-100">
-            <Link href="/cotizar">Organizar mi aventura <ArrowRight className="ml-2 w-5 h-5" /></Link>
+            <Link href={`/${locale}/cotizar`}><T>Organizar mi aventura </T><ArrowRight className="ml-2 w-5 h-5" /></Link>
           </Button>
         </div>
 
@@ -57,19 +58,19 @@ export function FifaSection() {
                   <div className="aspect-[16/10] relative overflow-hidden">
                     <img src={exp.image_url} alt={exp.title} className="w-full h-full object-cover" />
                     <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter text-primary">
-                      {exp.subtitle}
+                      <T>{exp.subtitle}</T>
                     </div>
                   </div>
                   
                   <div className="p-8 flex-1 flex flex-col">
-                    <h3 className="text-2xl font-serif font-bold text-stone-800 mb-3">{exp.title}</h3>
-                    <p className="text-stone-500 text-sm mb-6 leading-relaxed">{exp.description}</p>
+                    <h3 className="text-2xl font-serif font-bold text-stone-800 mb-3"><T>{exp.title}</T></h3>
+                    <p className="text-stone-500 text-sm mb-6 leading-relaxed"><T>{exp.description}</T></p>
                     
                     <ul className="space-y-3 mt-auto">
                       {exp.items.map((item, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm text-stone-700">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                          {item}
+                          <T>{item}</T>
                         </li>
                       ))}
                     </ul>

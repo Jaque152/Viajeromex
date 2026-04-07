@@ -1,10 +1,12 @@
 "use client";
-
+import { T } from "@/components/T";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Compass } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from 'next-intl';
 
 export function Hero() {
+  const locale = useLocale();
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary/30 to-background" />
@@ -13,21 +15,25 @@ export function Hero() {
           <div className="space-y-8 animate-fade-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
               <Compass className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Experiencias Auténticas</span>
+              <span className="text-sm font-medium text-primary">
+                <T>Experiencias Auténticas</T>
+              </span>
             </div>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-semibold leading-tight">
-              Descubre el <span className="relative text-primary">México</span><br />que siempre soñaste
+              <T> Descubre el </T> <span className="relative text-primary">México</span><br />
+              <T>que siempre soñaste</T>
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-              Diseñamos experiencias personalizadas donde tú eres el protagonista.
-              Desde santuarios naturales hasta tradiciones ancestrales.
+              <T>Diseñamos experiencias personalizadas donde tú eres el protagonista.
+              Desde santuarios naturales hasta tradiciones ancestrales.</T>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild className="mt-4">
-              <Link href="/experiencias">Ver experiencias
+              <Link href={`/${locale}/experiencias`}>
+              <T>Ver experiencias</T>
               </Link>
             </Button>
             </div>

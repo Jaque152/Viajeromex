@@ -1,7 +1,7 @@
 -- Habilitar extensión para UUIDs
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Limpieza previa (CUIDADO en producción)
+-- Limpieza previa 
 DROP TABLE IF EXISTS public.booking_items CASCADE;
 DROP TABLE IF EXISTS public.cart_items CASCADE;
 DROP TABLE IF EXISTS public.bookings CASCADE;
@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS public.customers CASCADE;
 DROP TABLE IF EXISTS public.contact_messages CASCADE;
 DROP TABLE IF EXISTS public.custom_quotes CASCADE;
 DROP TABLE IF EXISTS public.fifa_experiences CASCADE;
+DROP TABLE IF EXISTS public.translations CASCADE;
 
 -- Tablas de Catálogos
 CREATE TABLE public.categories (
@@ -559,3 +560,34 @@ INSERT INTO public.fifa_experiences (title, subtitle, description, items, image_
 ('Viewing Parties', 'Eventos en Vivo', 'Proyección de partidos en pantallas gigantes con ambiente temático.', '["Pantallas gigantes", "Trivia y juegos recreativos", "Catering temático y snacks"]', 'https://www.shutterstock.com/image-photo/watching-match-tv-home-2friends-260nw-2472315955.jpg', 3),
 ('Cultura y Ciudad', 'Recorridos Urbanos', 'Explora el lado futbolero de las sedes mundialistas.', '["Street football tours", "Bares deportivos icónicos", "Arte urbano y murales de fútbol"]', 'https://ovaciones.com/wp-content/uploads/2025/09/por-1200-x-630-px-2025-09-04T225525.393.png', 4),
 ('Experiencias educativas', 'Historia del fútbol y estrategias de juego', 'Descubre más acerca del fútbol', '["Talleres", "Trivia con premios"]', 'https://universidadeuropea.com/resources/media/images/tactica-fubtol-800x450.width-640.jpg', 5);
+
+--- BD TRADUCCIONES ------------
+CREATE TABLE public.translations (
+  id SERIAL PRIMARY KEY,
+  key_text TEXT NOT NULL,       -- El texto original en español
+  lang VARCHAR(5) NOT NULL,    -- 'en'
+  translated_text TEXT NOT NULL, -- El resultado de DeepL
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(key_text, lang)       -- Para no traducir lo mismo dos veces
+);
+
+
+-- Actualización de la tabla Bookings
+ALTER TABLE public.bookings
+  -- 1. Elimina los campos de facturación obsoletos
+  DROP COLUMN IF EXISTS rfc,
+  DROP COLUMN IF EXISTS razon_social,
+  DROP COLUMN IF EXISTS direccion_facturacion,
+  DROP COLUMN IF EXISTS ciudad_facturacion,
+  DROP COLUMN IF EXISTS estado_facturacion,
+  DROP COLUMN IF EXISTS codigo_postal_facturacion,
+  
+  -- 2. Añadir los campos obligatorios de dirección
+  ADD COLUMN pais VARCHAR,
+  ADD COLUMN direccion TEXT,
+  ADD COLUMN localidad VARCHAR,
+  ADD COLUMN estado VARCHAR,
+  ADD COLUMN codigo_postal VARCHAR,
+  
+  -- 3. Añadir el campo opcional para las notas del pedido
+  ADD COLUMN order_notes TEXT;

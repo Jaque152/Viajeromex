@@ -6,7 +6,12 @@ import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { FifaSection } from "@/components/FifaSection";
 
-export default function Home() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+export default async function Home({ params }: Props) {
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
   return (
     <main className="min-h-screen">
       <Header />

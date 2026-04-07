@@ -1,8 +1,10 @@
 "use client";
-
+import { useLocale } from 'next-intl';
 import Link from "next/link";
+import { T } from "@/components/T";
 
 export function Footer() {
+  const locale = useLocale();
   return (
     <footer className="bg-foreground text-background py-16">
       <div className="container mx-auto px-4 lg:px-8">
@@ -19,11 +21,11 @@ export function Footer() {
               </div>
             </div>
             <p className="text-background/60 mb-6 max-w-md">
-              Diseñamos experiencias personalizadas donde tú eres el protagonista.
+              <T>Diseñamos experiencias personalizadas donde tú eres el protagonista.</T>
             </p>
             {/* Payment Methods */}
             <div className="mb-6">
-              <p className="text-sm text-background/60 mb-3">Aceptamos</p>
+              <p className="text-sm text-background/60 mb-3"><T>Aceptamos</T></p>
               <div className="flex items-center gap-4">
                 {/* VISA Logo */}
                 <div className="bg-white rounded-md px-3 py-2 flex items-center justify-center h-10">
@@ -45,28 +47,28 @@ export function Footer() {
           </div>
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif font-semibold text-lg mb-6">Enlaces</h4>
+            <h4 className="font-serif font-semibold text-lg mb-6"><T>Enlaces</T></h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/" className="text-background/60 hover:text-primary transition-colors">
-                  Inicio
+                <Link href={`/${locale}/`} className="text-background/60 hover:text-primary transition-colors">
+                  <T>Inicio</T>
                 </Link>
               </li>
               <li>
-                <Link href="/#experiencias" className="text-background/60 hover:text-primary transition-colors">
-                  Experiencias
+                <Link href={`/${locale}/#experiencias`} className="text-background/60 hover:text-primary transition-colors">
+                  <T>Experiencias</T>
                 </Link>
               </li>
               <li>
-                <Link href="/#contacto" className="text-background/60 hover:text-primary transition-colors">
-                  Contacto
+                <Link href={`/${locale}/#contacto`} className="text-background/60 hover:text-primary transition-colors">
+                  <T>Contacto</T>
                 </Link>
               </li>
             </ul>
           </div>
           {/* Contact Info */}
           <div>
-            <h4 className="font-serif font-semibold text-lg mb-6">Contacto</h4>
+            <h4 className="font-serif font-semibold text-lg mb-6"><T>Contacto</T></h4>
             <ul className="space-y-3 text-background/60">
               <li>
                 <a href="mailto:informes@zenithmex.com" className="hover:text-primary transition-colors">
@@ -86,17 +88,17 @@ export function Footer() {
         <div className="border-t border-background/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-background/40">
-              © {new Date().getFullYear()} zenithmex.com- Todos los derechos reservados
+              © {new Date().getFullYear()} zenithmex.com- <T> Todos los derechos reservados</T>
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <Link href="/aviso-de-privacidad" className="text-background/60 hover:text-primary transition-colors">
-                Aviso de Privacidad
+              <Link href={`/${locale}/aviso-de-privacidad`} className="text-background/60 hover:text-primary transition-colors">
+                <T>Aviso de Privacidad</T>
               </Link>
-              <Link href="/terminos-y-condiciones" className="text-background/60 hover:text-primary transition-colors">
-                Términos y Condiciones
+              <Link href={`/${locale}/terminos-y-condiciones`} className="text-background/60 hover:text-primary transition-colors">
+                <T>Términos y Condiciones</T>
               </Link>
-              <Link href="/politica-de-cancelacion" className="text-background/60 hover:text-primary transition-colors">
-                Política de Cancelación
+              <Link href={`/${locale}/politica-de-cancelacion`} className="text-background/60 hover:text-primary transition-colors">
+                <T>Política de Cancelación</T>
               </Link>
             </div>
           </div>

@@ -1,4 +1,3 @@
-// src/app/api/checkout/route.ts
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
@@ -38,13 +37,10 @@ async function safeEtominFetch(url: string, options: RequestInit, stepName: stri
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { contactInfo, billingInfo, needsInvoice, cart, cardInfo, formattedTotal, manualFolioData} = body;
+    const { locale, contactInfo, billingInfo, orderNotes, cart, cardInfo, formattedTotal, manualFolioData} = body;
 
     const tempReferenceId = `REF-${Date.now()}`;
 
-    // ==========================================
-    // 1. INICIO DE SESIÓN EN ETOMIN (/signin)
-    // ==========================================
     const signinData = await safeEtominFetch(`${ETOMIN_BASE_URL}/signin`, {
       method: 'POST',
       headers: getEtominHeaders(),
@@ -56,9 +52,6 @@ export async function POST(req: Request) {
     }
     const authToken = signinData.authToken;
 
-    // ==========================================
-    // 2. TOKENIZAR TARJETA (/card/tokenizer)
-    // ==========================================
     const cardPayload = {
       cardData: {
         cardNumber: cardInfo.number,
@@ -79,9 +72,6 @@ export async function POST(req: Request) {
     }
     const cardToken = tokenData.cardNumberToken;
 
-    // ==========================================
-    // 3. PROCESAR LA VENTA (/sale)
-    // ==========================================
     const etominItems = manualFolioData 
       ? [{ title: `Pago Cotización: ${manualFolioData.folio}`, amount: manualFolioData.amount, quantity: 1, id: manualFolioData.folio }]
       : cart.items.map((item: CartItem) => ({
@@ -94,8 +84,8 @@ export async function POST(req: Request) {
     const finalAmountToCharge = manualFolioData ? manualFolioData.amount : cart.total;
 
     const salePayload = {
-      amount: Number(cart.total.toFixed(2)),
-      currency: 484, // Código ISO para MXN
+      amount: Number(finalAmountToCharge.toFixed(2)),
+      currency: 484, 
       reference: tempReferenceId,
       customerInformation: {
         firstName: contactInfo.firstName,
@@ -103,11 +93,10 @@ export async function POST(req: Request) {
         middleName: '',
         email: contactInfo.email,
         phone1: contactInfo.phone,
-        // Si no hay datos de facturación, pasamos valores por defecto para no romper el API
-        city: needsInvoice ? billingInfo.ciudad_facturacion : 'Ciudad de México',
-        address1: needsInvoice ? billingInfo.direccion_facturacion : 'Sin Especificar',
-        postalCode: needsInvoice ? billingInfo.codigo_postal_facturacion : '00000',
-        state: needsInvoice ? billingInfo.estado_facturacion : 'CDMX',
+        city: billingInfo.localidad || 'Ciudad de México',
+        address1: billingInfo.direccion || 'Sin Especificar',
+        postalCode: billingInfo.codigo_postal || '00000',
+        state: billingInfo.estado || 'CDMX',
         country: 'MX',
         ip: '127.0.0.1' 
       },
@@ -124,19 +113,12 @@ export async function POST(req: Request) {
       headers: getEtominHeaders({ 'Authorization': `Bearer ${authToken}` }),
       body: JSON.stringify(salePayload)
     }, 'Procesar Venta');
-
     
-    
-    // Etomin puede devolver 'APPROVED', 'PENDING' o 'DECLINED'
     if (saleData.status !== 'APPROVED' && saleData.status !== 'PENDING') {
-      // Imprimirá en terminal todo lo que Etomin contestó
       console.error("❌ DETALLE DEL RECHAZO ETOMIN:", saleData); 
       throw new Error(`Pago declinado: ${saleData.message || saleData.responseCode || 'Tarjeta rechazada'}`);
     }
 
-    // ==========================================
-    // 4. GUARDAR EN LA BASE DE DATOS (SUPABASE)
-    // ==========================================
     const { data: customer, error: custError } = await supabase
       .from('customers')
       .upsert({ 
@@ -153,20 +135,22 @@ export async function POST(req: Request) {
       .from('bookings')
       .insert({
         customer_id: customer.id,
-        session_id: manualFolioData ? manualFolioData.folio : null, //para pago-folio
+        session_id: manualFolioData ? manualFolioData.folio : null,
         total_amount: finalAmountToCharge,
         payment_status: 'paid',
         transaction_id: saleData.transactionId || saleData.authorizationNumber || tempReferenceId,
         payment_provider: 'etomin',
         payment_date: new Date().toISOString(),
-        rfc: needsInvoice ? billingInfo.rfc : null,
-        razon_social: needsInvoice ? billingInfo.razon_social : null,
-        direccion_facturacion: needsInvoice ? billingInfo.direccion_facturacion : null,
-        ciudad_facturacion: needsInvoice ? billingInfo.ciudad_facturacion : null,
-        estado_facturacion: needsInvoice ? billingInfo.estado_facturacion : null,
-        codigo_postal_facturacion: needsInvoice ? billingInfo.codigo_postal_facturacion : null
+        pais: billingInfo.pais,
+        direccion: billingInfo.direccion,
+        localidad: billingInfo.localidad,
+        estado: billingInfo.estado,
+        codigo_postal: billingInfo.codigo_postal,
+        order_notes: orderNotes || null 
       })
       .select().single();
+
+    if (bookError) throw new Error("Error guardando reserva en la base de datos.");
 
     if (!manualFolioData && cart.items.length > 0) {
       const bookingItems = cart.items.map((item: CartItem) => ({
@@ -180,24 +164,27 @@ export async function POST(req: Request) {
       if (itemsError) throw new Error("Error guardando items de reserva.");
     }
     
-    if (bookError) throw new Error("Error guardando reserva en la base de datos.");
-
-    const bookingItems = cart.items.map((item:CartItem) => ({
-      booking_id: booking.id,
-      package_id: item.packageId,
-      scheduled_date: item.date,
-      pax_qty: item.people,
-      unit_price: item.pricePerPerson
-    }));
-
-    const { error: itemsError } = await supabase.from('booking_items').insert(bookingItems);
-    if (itemsError) throw new Error("Error guardando items de reserva.");
-    
-    // ==========================================
-    // 5. ENVIAR CORREO DE CONFIRMACIÓN
-    // ==========================================
     const visualCode = `RES-${booking.id.slice(0, 8).toUpperCase()}`;
     const primaryColor = '#c2410c';
+
+    const isEnglish = locale === 'en';
+    const subjectEmail = isEnglish 
+      ? `Purchase Confirmation: ${visualCode} - Thank you for traveling with us!` 
+      : `Confirmación de Compra: ${visualCode} - ¡Gracias por viajar con nosotros!`;
+
+    const greeting = isEnglish ? `Hello ${contactInfo.firstName}!` : `¡Hola ${contactInfo.firstName}!`;
+    const confirmationText = isEnglish ? "Your reservation is confirmed." : "Tu reservación ha sido confirmada.";
+    const codeLabel = isEnglish ? "Booking Code" : "Código de Reserva";
+    const totalLabel = isEnglish ? "TOTAL PAID:" : "TOTAL PAGADO:";
+    const quoteLabel = isEnglish ? "Quote Payment" : "Pago de Cotización";
+    const folioLabel = isEnglish ? "Folio" : "Folio";
+    const qtyLabel = isEnglish ? "Qty." : "Cant.";
+    const priceLabel = isEnglish ? "Price" : "Precio";
+    const experienceLabel = isEnglish ? "Experience" : "Experiencia";
+    const detailsLabel = isEnglish ? "Contact & Billing Details" : "Detalles de Contacto y Facturación";
+    const phoneLabel = isEnglish ? "Phone:" : "Teléfono:";
+    const addressLabel = isEnglish ? "Address:" : "Dirección:";
+    const notesLabel = isEnglish ? "Notes:" : "Notas:";
     
     const htmlContent = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; color: #444; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
@@ -205,24 +192,24 @@ export async function POST(req: Request) {
             <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">Zenith México</h1>
           </div>
           <div style="padding: 40px 30px;">
-            <h2 style="color: #1c1917; margin-top: 0;">¡Hola ${contactInfo.firstName}!</h2>
-            <p style="font-size: 16px; line-height: 1.6;">Tu reservación ha sido confirmada.</p>
+            <h2 style="color: #1c1917; margin-top: 0;">${greeting}</h2>
+            <p style="font-size: 16px; line-height: 1.6;">${confirmationText}</p>
           
             <div style="background-color: #fafaf9; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid ${primaryColor};">
-              <p style="margin: 0; font-size: 13px; color: #78716c; font-weight: bold; text-transform: uppercase;">Código de Reserva</p>
+              <p style="margin: 0; font-size: 13px; color: #78716c; font-weight: bold; text-transform: uppercase;">${codeLabel}</p>
               <p style="margin: 5px 0 0; font-size: 22px; font-family: monospace; color: ${primaryColor}; font-weight: bold;">${visualCode}</p>
             </div>
             
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
               <thead>
                 <tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
-                  <th style="padding: 12px 0; font-size: 14px; color: #78716c;">Experiencia</th>
-                  <th style="padding: 12px 0; font-size: 14px; color: #78716c; text-align: center;">Cant.</th>
-                  <th style="padding: 12px 0; font-size: 14px; color: #78716c; text-align: right;">Precio</th>
+                  <th style="padding: 12px 0; font-size: 14px; color: #78716c;">${experienceLabel}</th>
+                  <th style="padding: 12px 0; font-size: 14px; color: #78716c; text-align: center;">${qtyLabel}</th>
+                  <th style="padding: 12px 0; font-size: 14px; color: #78716c; text-align: right;">${priceLabel}</th>
                 </tr>
               </thead>
               <tbody>
-                ${cart.items.map((item: CartItem) => `
+                ${!manualFolioData ? cart.items.map((item: CartItem) => `
                   <tr style="border-bottom: 1px solid #f3f4f6;">
                     <td style="padding: 15px 0;">
                       <p style="margin: 0; font-weight: bold; color: #1c1917;">${item.experience.title}</p>
@@ -231,28 +218,43 @@ export async function POST(req: Request) {
                     <td style="padding: 15px 0; text-align: center; vertical-align: top;">${item.people}</td>
                     <td style="padding: 15px 0; text-align: right; font-weight: bold; vertical-align: top;">${formatPrice(item.totalPrice)}</td>
                   </tr>
-                `).join('')}
+                `).join('') : `
+                   <tr style="border-bottom: 1px solid #f3f4f6;">
+                    <td style="padding: 15px 0;">
+                      <p style="margin: 0; font-weight: bold; color: #1c1917;">${quoteLabel}</p>
+                      <p style="margin: 4px 0 0; font-size: 12px; color: #a8a29e;">${folioLabel}: ${manualFolioData.folio}</p>
+                    </td>
+                    <td style="padding: 15px 0; text-align: center; vertical-align: top;">1</td>
+                    <td style="padding: 15px 0; text-align: right; font-weight: bold; vertical-align: top;">${formatPrice(manualFolioData.amount)}</td>
+                  </tr>
+                `}
               </tbody>
             </table>
 
-            <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; text-align: right;">
-              <span style="font-size: 18px; font-weight: bold; color: #1c1917;">TOTAL PAGADO: </span>
+            <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-bottom: 30px; text-align: right;">
+              <span style="font-size: 18px; font-weight: bold; color: #1c1917;">${totalLabel} </span>
               <span style="font-size: 22px; font-weight: 900; color: ${primaryColor};">${formattedTotal}</span>
             </div>
+
+            <div style="background-color: #fafaf9; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+              <h3 style="margin: 0 0 15px; font-size: 15px; color: #1c1917;">${detailsLabel}</h3>
+              <p style="margin: 5px 0; font-size: 14px; color: #444;"><strong>Email:</strong> ${contactInfo.email}</p>
+              <p style="margin: 5px 0; font-size: 14px; color: #444;"><strong>${phoneLabel}</strong> ${contactInfo.phone}</p>
+              <p style="margin: 5px 0; font-size: 14px; color: #444;"><strong>${addressLabel}</strong> ${billingInfo.direccion}, ${billingInfo.localidad}, ${billingInfo.estado}, ${billingInfo.codigo_postal}, ${billingInfo.pais}</p>
+              ${orderNotes ? `<p style="margin: 5px 0; font-size: 14px; color: #444;"><strong>${notesLabel}</strong> ${orderNotes}</p>` : ''}
+            </div>
+
           </div>
         </div>
     `;
 
-    const { error: mailError } = await resend.emails.send({
+    await resend.emails.send({
       from: 'Zenith México <reservas@zenithmex.com>', 
       to: [contactInfo.email], 
-      subject: `Confirmación de Compra: ${visualCode} - ¡Gracias por viajar con nosotros!`,
+      subject: subjectEmail,
       html: htmlContent,
     });
 
-    // ==========================================
-    // 6. RESPUESTA AL FRONTEND
-    // ==========================================
     return NextResponse.json({ 
       success: true, 
       bookingId: booking.id,

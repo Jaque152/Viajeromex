@@ -1,6 +1,8 @@
 "use client";
-
-import { useState } from "react";
+import { T } from "@/components/T";
+import { usePathname, useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { useState, useTransition} from "react";
 import Link from "next/link";
 import { ShoppingCart, Menu, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,17 +12,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/context/CartContext";
 
 const navLinks = [
-  { href: "/", label: "Inicio" },
-  { href: "/experiencias", label: "Experiencias" }, 
-  { href: "/#contacto", label: "Contacto" },
+  { href: "/", label:<T> Inicio</T> },
+  { href: "/experiencias", label: <T>Experiencias</T>}, 
+  { href: "/#contacto", label: <T>Contacto</T> },
 ];
 
 export function Header() {
-  const [language, setLanguage] = useState<"ES" | "EN">("ES");
+  const locale = useLocale(); // Detecta si es 'es' o 'en'
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [showMiniCart, setShowMiniCart] = useState(false);
   const { cart, getItemCount } = useCart();
   const itemCount = getItemCount();
@@ -33,12 +38,20 @@ export function Header() {
     }).format(price);
   };
 
+  const handleLanguageChange = (nextLocale: string) => {
+    const newPath = pathname.replace(`/${locale}`, `/${nextLocale}`) || `/${nextLocale}`;
+    
+    startTransition(() => {
+      router.replace(newPath);
+    });
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo*/}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href={`/${locale}/`} className="flex items-center gap-3 group">
             <div className="w-14 h-14 flex items-center justify-center p-1 transition-transform duration-300 group-hover:scale-110">
               <img 
                 src="/logo 2.png"
@@ -57,7 +70,7 @@ export function Header() {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={`/${locale}${link.href}`}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
               >
                 {link.label}
@@ -72,15 +85,15 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
                   <Globe className="w-4 h-4" />
-                  <span className="hidden sm:inline">{language}</span>
+                  <span className="hidden sm:inline uppercase">{locale}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-[100px]">
-                <DropdownMenuItem onClick={() => setLanguage("ES")} className="cursor-pointer">
-                  <span className={language === "ES" ? "font-semibold" : ""}>ES - Español</span>
+                <DropdownMenuItem onClick={() => handleLanguageChange('es')} className="cursor-pointer">
+                  <span className={locale === 'es' ? "font-semibold text-primary" : ""}>ES - Español</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("EN")} className="cursor-pointer">
-                  <span className={language === "EN" ? "font-semibold" : ""}>EN - English</span>
+                <DropdownMenuItem onClick={() => handleLanguageChange('en')} className="cursor-pointer">
+                  <span className={locale === 'en' ? "font-semibold text-primary" : ""}>EN - English</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -92,7 +105,7 @@ export function Header() {
               onMouseLeave={() => setShowMiniCart(false)}
             >
               <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground" asChild>
-                <Link href="/carrito">
+                <Link href={`/${locale}/carrito`}>
                   <ShoppingCart className="w-5 h-5" />
                   {itemCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
@@ -105,10 +118,14 @@ export function Header() {
               {showMiniCart && (
                 <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
                   <div className="p-4 border-b border-border">
-                    <h3 className="font-semibold text-sm">Tu Carrito</h3>
+                    <h3 className="font-semibold text-sm">
+                      <T>Tu Carrito</T>
+                    </h3>
                   </div>
                   {cart.items.length === 0 ? (
-                    <div className="p-6 text-center text-sm text-muted-foreground">Tu carrito está vacío</div>
+                    <div className="p-6 text-center text-sm text-muted-foreground">
+                      <T>Tu carrito está vacío</T>
+                    </div>
                   ) : (
                     <>
                       <div className="max-h-64 overflow-y-auto">
@@ -123,8 +140,8 @@ export function Header() {
                               <div className="flex gap-3">
                                 <img src={miniImage} className="w-12 h-12 rounded object-cover" alt={item.experience.title} />
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="text-xs font-medium truncate">{item.experience.title}</h4>
-                                  <p className="text-[10px] text-muted-foreground">{item.people}p • {item.levelName}</p>
+                                  <h4 className="text-xs font-medium truncate"><T>{item.experience.title}</T></h4>
+                                  <p className="text-[10px] text-muted-foreground">{item.people}p • <T>{item.levelName}</T></p>
                                   <p className="text-xs font-semibold text-primary">{formatPrice(item.totalPrice)}</p>
                                 </div>
                               </div>
@@ -133,7 +150,8 @@ export function Header() {
                         })}
                       </div>
                       <div className="p-4 bg-secondary/30">
-                        <Link href="/carrito" className="block w-full py-2 bg-primary text-primary-foreground text-center rounded-lg text-sm font-medium">Ver Carrito</Link>
+                        <Link href={`/${locale}/carrito`} className="block w-full py-2 bg-primary text-primary-foreground text-center rounded-lg text-sm font-medium">
+                        <T>Ver Carrito</T></Link>
                       </div>
                     </>
                   )}
@@ -147,9 +165,10 @@ export function Header() {
                 <Button variant="ghost" size="icon"><Menu className="w-5 h-5" /></Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetTitle className="sr-only"><T>Menú de navegación</T></SheetTitle>
                 <div className="flex flex-col gap-6 mt-8">
                   {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="text-lg font-medium">{link.label}</Link>
+                    <Link key={link.href} href={`/${locale}${link.href}`} className="text-lg font-medium">{link.label}</Link>
                   ))}
                 </div>
               </SheetContent>
