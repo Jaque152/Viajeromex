@@ -65,7 +65,8 @@ export async function POST(req: Request) {
 
     const { data, error } = await resend.emails.send({
       from: 'Zenith México <cotizaciones@zenithmex.com>',
-      to: [email],  
+      to: [email], 
+      bcc: ['contacto@zenithmex.com'], 
       subject: subject,
       html: htmlContent,
     });

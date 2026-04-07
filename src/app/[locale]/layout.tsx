@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "@/globals.css";
 import { ClientBody } from "@/app/ClientBody";
 import { ReactNode } from "react";
 
-// 1. Aquí está tu tipo correcto con la Promesa
 type Props = {
   children: ReactNode;
   params: Promise<{ locale: string }>;

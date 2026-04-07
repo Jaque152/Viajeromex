@@ -251,6 +251,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: 'Zenith México <reservas@zenithmex.com>', 
       to: [contactInfo.email], 
+      bcc: ['contacto@zenithmex.com'],
       subject: subjectEmail,
       html: htmlContent,
     });
