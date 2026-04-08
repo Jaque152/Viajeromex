@@ -17,9 +17,10 @@ export default function CarritoPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-MX", {
+    const formatter = new Intl.NumberFormat("es-MX", {
       style: "currency", currency: "MXN", minimumFractionDigits: 0,
-    }).format(price);
+    });
+    return `${formatter.format(price)} MXN`;
   };
 
   const formatDate = (dateStr: string) => {

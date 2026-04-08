@@ -112,7 +112,7 @@ function CheckoutContent() {
     contactInfo.firstName && contactInfo.email && contactInfo.phone &&
     billingInfo.pais && billingInfo.direccion && billingInfo.localidad && billingInfo.estado && billingInfo.codigo_postal &&
     cardInfo.number.length >= 15 && cardInfo.name && cardInfo.expiry.length === 5 && cardInfo.cvv.length >= 3 &&
-    cart.items.length > 0;;
+    cart.items.length > 0;
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value.replace(/\D/g, '');
@@ -190,64 +190,72 @@ function CheckoutContent() {
                 <CreditCard className="w-40 h-40" />
               </div>
               <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-foreground">
-                      <CreditCard className="text-primary w-6 h-6"/> <T>Método de Pago</T>
-                    </h2>
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                      <Lock className="w-3.5 h-3.5" /> <T>PAGO SEGURO</T>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                  <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-foreground">
+                    <CreditCard className="text-primary w-6 h-6" /> <T>Método de Pago</T>
+                  </h2>
+                  {/* Logo de Etomin */}
+                  <div className="flex flex-col items-end">
+                    <div className="h-6 opacity-70 mb-1">
+                       <img src="/etomin_logo.svg" alt="Powered by Etomin" className="h-full object-contain" />
                     </div>
-                  </div>
-                  
-                  <div className="grid gap-5 max-w-md">
-                    <Input placeholder={phTarjeta} required maxLength={19} value={cardInfo.number} onChange={(e)=>setCardInfo({...cardInfo, number: e.target.value.replace(/\D/g, '')})} className="bg-background border-border h-12 font-mono text-lg tracking-widest focus-visible:ring-primary rounded-xl" />
-                    <Input placeholder={phNombreTarjeta} required value={cardInfo.name} onChange={(e)=>setCardInfo({...cardInfo, name: e.target.value.toUpperCase()})} className="bg-background border-border h-12 text-sm focus-visible:ring-primary rounded-xl" />
-                    <div className="grid grid-cols-2 gap-5">
-                      <Input placeholder={phFecha} required maxLength={5} value={cardInfo.expiry} onChange={handleExpiryChange} className="bg-background border-border h-12 text-sm text-center focus-visible:ring-primary rounded-xl" />
-                      <Input placeholder={phCvv} type="password" required maxLength={4} value={cardInfo.cvv} onChange={(e)=>setCardInfo({...cardInfo, cvv: e.target.value.replace(/\D/g, '')})} className="bg-background border-border h-12 text-sm text-center tracking-widest focus-visible:ring-primary rounded-xl" />
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center mt-4"><T>Tus datos están protegidos y encriptados de extremo a extremo.</T></p>
                   </div>
                 </div>
-              </Card>
-            </div>
+                  
+                <div className="grid gap-5 max-w-md">
+                  <Input placeholder={phTarjeta} required maxLength={19} value={cardInfo.number} onChange={(e)=>setCardInfo({...cardInfo, number: e.target.value.replace(/\D/g, '')})} className="bg-background border-border h-12 font-mono text-lg tracking-widest focus-visible:ring-primary rounded-xl" />
+                  <Input placeholder={phNombreTarjeta} required value={cardInfo.name} onChange={(e)=>setCardInfo({...cardInfo, name: e.target.value.toUpperCase()})} className="bg-background border-border h-12 text-sm focus-visible:ring-primary rounded-xl" />
+                  <div className="grid grid-cols-2 gap-5">
+                    <Input placeholder={phFecha} required maxLength={5} value={cardInfo.expiry} onChange={handleExpiryChange} className="bg-background border-border h-12 text-sm text-center focus-visible:ring-primary rounded-xl" />
+                    <Input placeholder={phCvv} type="password" required maxLength={4} value={cardInfo.cvv} onChange={(e)=>setCardInfo({...cardInfo, cvv: e.target.value.replace(/\D/g, '')})} className="bg-background border-border h-12 text-sm text-center tracking-widest focus-visible:ring-primary rounded-xl" />
+                  </div>
+                  {/* Logos Pago Seguro */}
+                  <div className="h-10" >
+                    <img src="/etomin_secbadge.svg" alt="Secure Payment" className="h-full object-contain" />
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground text-center mt-4"><T>Tus datos están protegidos y encriptados de extremo a extremo.</T></p>
+                </div>
+              </div>
+            </Card>
+          </div>
             
-            <div className="lg:col-span-1">
-              <Card className="p-8 sticky top-28 border-border shadow-2xl rounded-2xl">
-                <h2 className="text-2xl font-serif font-bold mb-6 text-foreground border-b border-border pb-4"><T>Resumen de Compra</T></h2>
-                
-                <div className="space-y-4 mb-8">
-                  {cart.items.length === 0 ? (
-                    <p className="text-muted-foreground italic"><T>Tu carrito está vacío.</T></p>
-                  ) : (
-                    cart.items.map((item, index) => (
-                      <div key={index} className="flex justify-between text-sm items-start">
-                        <span className="text-muted-foreground pr-4 leading-relaxed"><T>{item.experience.title}</T> <span className="font-semibold text-foreground">(x{item.people})</span></span>
-                        <span className="font-bold text-foreground">{formatPrice(item.totalPrice)}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <div className="border-t border-border pt-6 mt-6">
-                  <div className="flex justify-between items-end text-xl font-bold text-foreground mb-8">
-                    <span className="font-serif"><T>Total</T></span>
-                    <div className="text-right">
-                      <div className="text-2xl text-primary">{formatPrice(finalTotal)}</div>
-                      <div className="text-xs font-medium text-muted-foreground mt-1"><T>IVA incluido</T></div>
+          <div className="lg:col-span-1">
+            <Card className="p-8 sticky top-28 border-border shadow-2xl rounded-2xl">
+              <h2 className="text-2xl font-serif font-bold mb-6 text-foreground border-b border-border pb-4"><T>Resumen de Compra</T></h2>
+              
+              <div className="space-y-4 mb-8">
+                {cart.items.length === 0 ? (
+                  <p className="text-muted-foreground italic"><T>Tu carrito está vacío.</T></p>
+                ) : (
+                  cart.items.map((item, index) => (
+                    <div key={index} className="flex justify-between text-sm items-start">
+                      <span className="text-muted-foreground pr-4 leading-relaxed"><T>{item.experience.title}</T> <span className="font-semibold text-foreground">(x{item.people})</span></span>
+                      <span className="font-bold text-foreground">{formatPrice(item.totalPrice)}</span>
                     </div>
+                  ))
+                )}
+              </div>
+
+              <div className="border-t border-border pt-6 mt-6">
+                <div className="flex justify-between items-end text-xl font-bold text-foreground mb-8">
+                  <span className="font-serif"><T>Total</T></span>
+                  <div className="text-right">
+                    <div className="text-2xl text-primary">{formatPrice(finalTotal)}</div>
+                    <div className="text-xs font-medium text-muted-foreground mt-1"><T>IVA incluido</T></div>
                   </div>
-                  
-                  <Button type="submit" disabled={!isFormValid || isProcessing} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-14 rounded-xl shadow-lg transition-all text-lg">
-                    {isProcessing ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : <Lock className="w-5 h-5 mr-2" />}
-                    {isProcessing ? textProcesando : `${textPagar} ${formatPrice(finalTotal)}`}
-                  </Button>
                 </div>
-              </Card>
-            </div>
-          </form>
-        </div>
-      </main>
+                
+                <Button type="submit" disabled={!isFormValid || isProcessing} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-14 rounded-xl shadow-lg transition-all text-lg">
+                  {isProcessing ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : <Lock className="w-5 h-5 mr-2" />}
+                  {isProcessing ? textProcesando : `${textPagar} ${formatPrice(finalTotal)}`}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </form>
+      </div>
+    </main>
   );
 }
 

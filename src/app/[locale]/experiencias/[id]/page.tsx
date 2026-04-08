@@ -66,9 +66,10 @@ export default function ExperienceDetailPage() {
   const selectedPackage = packages.find(p => p.id === selectedPackageId);
   
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-MX", {
+    const formatter = new Intl.NumberFormat("es-MX", {
       style: "currency", currency: "MXN", minimumFractionDigits: 0,
-    }).format(price);
+    });
+    return `${formatter.format(price)} MXN`;
   };
 
   const handleAddToCart = () => {
@@ -128,9 +129,12 @@ export default function ExperienceDetailPage() {
 
         {selectedPackage && (
           <div className="mb-8 animate-in fade-in">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
-              <span className="font-bold text-lg text-foreground"><T>{selectedPackage.package_name}</T></span>
-              <span className="font-serif font-bold text-3xl text-primary">{formatPrice(selectedPackage.price)}</span>
+            <div className="flex flex-col mb-6 pb-4 border-b border-border">
+              <span className="font-bold text-lg text-foreground mb-1"><T>{selectedPackage.package_name}</T></span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-medium text-primary tracking-tight">{formatPrice(selectedPackage.price)}</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest"><T>IVA incluido</T></span>
+              </div>
             </div>
             
             {selectedPackage.features?.incluye && (
@@ -188,7 +192,7 @@ export default function ExperienceDetailPage() {
             disabled={!selectedDate || isAdding}
           >
             {isAdding ? <Loader2 className="animate-spin w-5 h-5 mr-2 inline" /> : null}
-            {isAdding ? <T>Añadiendo...</T> : <T>Confirmar Reserva</T>}
+            {isAdding ? <T>Añadiendo...</T> : <T>Añadir al carrito</T>}
           </Button>
         </div>
       </CardContent>
