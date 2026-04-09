@@ -204,7 +204,7 @@ export function Contact() {
                     href="mailto:informes@zenithmex.com"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    informes@zenithmex.com
+                    contacto@zenithmex.com
                   </a>
                 </div>
               </div>

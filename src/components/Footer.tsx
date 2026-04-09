@@ -114,7 +114,7 @@ export function Footer() {
             <ul className="space-y-3 text-background/60 mb-8">
               <li>
                 <a href="mailto:informes@zenithmex.com" className="hover:text-primary transition-colors">
-                  informes@zenithmex.com
+                  contacto@zenithmex.com
                 </a>
               </li>
               <li>
