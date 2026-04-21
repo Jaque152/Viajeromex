@@ -48,7 +48,7 @@ export default function CotizarPage() {
 
     try {
       const customer_name = `${formData.firstName} ${formData.lastName}`.trim();
-      const { error: dbError } = await supabase.from('custom_quotes').insert([
+      const { error: dbError } = await supabase.from('custom_quotes_explonix').insert([
         {
           customer_name: customer_name, customer_email: formData.email, phone: formData.phone, destination: formData.destination,
           start_date: formData.startDate, pax_qty: formData.travelers, budget: formData.budget,

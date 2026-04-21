@@ -60,14 +60,14 @@ export function Pricing() {
               <div className="p-8 md:p-10 bg-slate-900">
                 <ul className="space-y-5 mb-10">
                   {[
-                    <T>Itinerario 100% personalizado</T>,
-                    <T>Precio ajustado a tu presupuesto</T>,
-                    <T>Asesoría de expertos en destinos</T>,
-                    <T>Sin cargos ocultos - IVA incluido</T>
+                    "Diseño de ruta inteligente",
+                    "Precio ajustado a tu presupuesto",
+                    "Asignación de asesores especializados",
+                    "Transparencia total - Impuestos incluidos"
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4 text-sm font-bold text-slate-300">
                       <Check className="w-5 h-5 text-cyan-400 shrink-0" />
-                      {item}
+                      <T>{item}</T>
                     </li>
                   ))}
                 </ul>

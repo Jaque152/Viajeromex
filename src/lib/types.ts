@@ -21,10 +21,10 @@ export interface Experience {
   location: string;
   duration?: string;
   images: string[]; 
-  what_you_will_do?: string[];          // <--- NUEVO
+  what_you_will_do?: string[];      
   itinerary?: string[]; 
   requirements?: string[]; 
-  important_info?: Record<string, string[]>; // <--- NUEVO (Objeto agrupado)
+  important_info?: Record<string, string[]>; 
   included_general?: string[]; 
   category_id: number;
   categories?: Category; 
@@ -44,14 +44,6 @@ export interface ActivityPackage {
   min_pax: number; 
   max_pax?: number; 
   is_active: boolean; 
-}
-
-export interface ActivityAvailability {
-  id: number;
-  package_id: number;
-  scheduled_date: string; 
-  scheduled_time?: string; 
-  remaining_slots: number;
 }
 
 export interface Customer {
@@ -155,6 +147,6 @@ export interface SupabaseExperienceResponse {
   location: string;
   images: string[]; 
   category_id: number;
-  categories: { id: number; name: string; slug: string } | null;
-  activity_packages: { price: number; package_name: string }[];
+  categories?: { id: number; name: string; slug: string } | null;
+  activity_packages?: { price: number; package_name: string }[];
 }

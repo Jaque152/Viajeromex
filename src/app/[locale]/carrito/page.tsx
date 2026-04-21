@@ -46,7 +46,6 @@ export default function CarritoPage() {
                 {cart.items.length} {cart.items.length === 1 ? <T>experiencia</T> : <T>experiencias</T>} <T>seleccionadas</T>
               </p>
             </div>
-            {/* CORRECCIÓN APLICADA AQUÍ: Se cierra correctamente la condición con )} */}
             {cart.items.length > 0 && (
               <Button variant="ghost" onClick={clearCart} className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl font-bold transition-colors">
                 <Trash2 className="w-5 h-5 mr-2" /> <T>Vaciar carrito</T>

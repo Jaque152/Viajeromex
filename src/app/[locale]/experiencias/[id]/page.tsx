@@ -34,13 +34,13 @@ export default function ExperienceDetailPage() {
       setLoading(true);
       try {
         const { data: activity } = await supabase
-          .from('activities')
-          .select('*, categories(name, slug)')
+          .from('activities_explonix')
+          .select('*, categories:categories_explonix(name, slug)')
           .eq('id', params.id)
           .single();
 
         const { data: paks } = await supabase
-          .from('activity_packages')
+          .from('activity_packages_explonix')
           .select('*')
           .eq('activity_id', params.id)
           .order('id', { ascending: true });

@@ -17,13 +17,13 @@ export function Hero() {
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-foreground rounded-full shadow-lg hover:scale-105 transition-transform cursor-default">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-xs sm:text-sm font-bold text-background tracking-wide uppercase">
-              <T>Experiencias Auténticas</T>
+              <T>OPERACIONES DE VIAJE</T>
             </span>
           </div>
 
           {/* Tamaños de texto */}
           <h1 className="text-5xl md:text-6xl lg:text-[5.5rem] font-black leading-[1.05] tracking-tighter">
-            <T>Descubre el</T>{" "}
+            <T>Deesbloquea el</T>{" "}
             <span className="relative inline-block">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
                 México
@@ -34,18 +34,17 @@ export function Hero() {
               </svg>
             </span>
             <br />
-            <T>que siempre soñaste</T>
+            <T>inexplorado</T>
           </h1>
 
           <p className="text-lg md:text-xl font-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            <T>Diseñamos experiencias personalizadas donde tú eres el protagonista.
-            Desde santuarios naturales hasta tradiciones ancestrales, con total conectividad.</T>
+            <T>Tecnología, precisión y logística de primer nivel para conectarte con los rincones más fascinantes del país. Tú decides el destino, nosotros orquestamos el resto.</T>
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 w-full sm:w-auto">
             <Button asChild size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-lg shadow-[0_0_40px_-10px_rgba(255,87,51,0.5)] transition-all hover:scale-105 group">
               <Link href={`/${locale}/experiencias`}>
-                <T>Ver experiencias</T>
+                <T>Iniciar Exploración</T>
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -58,10 +57,10 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Galería Panorámica Flotante (Reemplaza el Grid Lateral) */}
+        {/* Galería Panorámica Flotante */}
         <div className="mt-20 relative w-full max-w-6xl mx-auto hidden md:flex justify-center items-center gap-6 animate-fade-up" style={{ animationDelay: '0.2s' }}>
           
-          {/* Tarjeta Izquierda (Rotada) */}
+          {/* Tarjeta Izquierda */}
           <div className="relative w-1/3 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl -rotate-6 translate-y-8 hover:rotate-0 hover:translate-y-0 transition-all duration-500 hover:z-20 group">
              <div className="absolute inset-0 bg-[url('https://oem.com.mx/elsoldemexico/img/13723873/1729769072/BASE_LANDSCAPE/1200/image.webp')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -70,7 +69,7 @@ export function Hero() {
              </div>
           </div>
 
-          {/* Tarjeta Central (Protagonista) */}
+          {/* Tarjeta Central */}
           <div className="relative w-2/5 aspect-square md:aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] z-10 hover:scale-105 transition-all duration-500 group">
              <div className="absolute inset-0 bg-[url('https://lugares.inah.gob.mx/sites/default/files/zonas/185_A_slider_chichen_itza_3.jpg')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -84,7 +83,7 @@ export function Hero() {
              </div>
           </div>
 
-          {/* Tarjeta Derecha (Rotada) */}
+          {/* Tarjeta Derecha */}
           <div className="relative w-1/3 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl rotate-6 translate-y-8 hover:rotate-0 hover:translate-y-0 transition-all duration-500 hover:z-20 group">
              <div className="absolute inset-0 bg-[url('https://www.delphinusworld.com/hubfs/playas%20y%20cenotes%20riviera%20maya.webp')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

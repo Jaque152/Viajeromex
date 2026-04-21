@@ -46,9 +46,8 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Nivel 2: Branding Masivo (Corregido para evitar desborde) */}
+        {/* Nivel 2: Branding */}
         <div className="relative mb-20 select-none flex justify-center w-full overflow-hidden">
-          {/* Tamaños controlados por breakpoints en lugar de vw puro */}
           <h2 className="text-4xl sm:text-[4rem] md:text-[6rem] lg:text-[7rem] xl:text-[9rem] leading-none font-black text-slate-900 tracking-tighter text-center">
             EXPLONIX
           </h2>
@@ -57,7 +56,7 @@ export function Footer() {
           <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent -z-10" />
         </div>
 
-        {/* Nivel 3: Contacto y Pagos (Nueva Distribución SaaS) */}
+        {/* Nivel 3: Contacto y Pagos*/}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 items-start py-12 border-y border-slate-100 mb-12">
           
           {/* Datos de Contacto */}

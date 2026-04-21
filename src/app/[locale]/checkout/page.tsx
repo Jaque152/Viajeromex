@@ -186,7 +186,7 @@ function CheckoutContent() {
                     <T>Método de Pago</T>
                   </h2>
                   <div className="h-8 opacity-90 bg-white/10 px-4 py-1.5 rounded-lg backdrop-blur-md">
-                     <img src="/etomin_logo.svg" alt="Powered by Etomin" className="h-full object-contain brightness-0 invert" />
+                     <img src="/logo-keycop-2.png" alt="Powered by Keycop" className="h-full object-contain brightness-0 invert" />
                   </div>
                 </div>
                   

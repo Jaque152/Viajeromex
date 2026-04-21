@@ -10,20 +10,18 @@ import { T } from "@/components/T";
 
 export function FifaSection() {
   const [fifaExps, setFifaExps] = useState<FifaExp[]>([]);
-  // CORRECCIÓN: El ID ahora respeta estrictamente el tipo 'number' de tu interfaz
   const [activeExpId, setActiveExpId] = useState<number | null>(null);
   const locale = useLocale();
 
   useEffect(() => {
     async function loadFifaData() {
       const { data } = await supabase
-        .from('fifa_experiences')
+        .from('fifa_experiences_explonix')
         .select('*')
         .order('order_index', { ascending: true });
         
       if (data) {
         setFifaExps(data);
-        // Autoseleccionar la primera opción si existen datos para inicializar el Master-Detail
         if (data.length > 0) {
           setActiveExpId(data[0].id); 
         }
@@ -42,17 +40,17 @@ export function FifaSection() {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         
-        {/* Cabecera optimizada */}
+        {/* Cabecera*/}
         <div className="flex flex-col lg:flex-row items-start justify-between gap-8 mb-16">
           <div className="max-w-2xl">
             <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter leading-[1]">
-              <T>Tu lugar en la</T><br/>
+              <T>El evento de la década,</T><br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-primary">
-                <T>gran fiesta</T>
+                <T>cero fricción</T>
               </span>
             </h2>
             <p className="text-cyan-100 text-lg leading-relaxed font-medium">
-              <T>Armamos tu logística completa. Dime tu presupuesto, nosotros ponemos el acceso, la conectividad y la adrenalina.</T>
+              <T>Asegura tu lugar sin el estrés de la planificación. Dinos cómo lo imaginas y nuestro equipo blindará tus accesos, traslados y alojamiento estratégico.</T>
             </p>
           </div>
           <Button asChild className="rounded-full bg-white text-indigo-950 hover:bg-cyan-400 hover:text-indigo-950 h-14 px-8 text-base font-bold transition-colors shadow-xl">
@@ -62,11 +60,11 @@ export function FifaSection() {
           </Button>
         </div>
 
-        {/* Nuevo Layout: Interactive Showcase */}
+        {/* Layout: Interactive Showcase */}
         {fifaExps.length > 0 && activeExp && (
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
-            {/* Columna Izquierda: Menú de Opciones (Master) */}
+            {/* Columna Izquierda: Menú de Opciones */}
             <div className="lg:col-span-5 flex flex-col gap-3">
               {fifaExps.map((exp) => (
                 <button

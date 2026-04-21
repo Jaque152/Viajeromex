@@ -30,15 +30,15 @@ function ExperienciasContent() {
     async function fetchData() {
       setLoading(true);
       try {
-        const { data: catData } = await supabase.from('categories').select('*');
+        const { data: catData } = await supabase.from('categories_explonix').select('*');
         if (catData) setCategories(catData);
 
-        const { data: actData } = await supabase
-          .from('activities')
+        const { data: actData, error: actError } = await supabase
+          .from('activities_explonix')
           .select(`
             id, title, slug, description, location, images, category_id,
-            categories (id, name, slug),
-            activity_packages (price)
+            categories:categories_explonix (id, name, slug),
+            activity_packages:activity_packages_explonix (price)
           `);
 
         if (actData) {
@@ -180,7 +180,7 @@ function ExperienciasContent() {
                           
                           <div className="flex items-end justify-between mt-auto pt-6 border-t border-slate-100">
                             <div>
-                              <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1"><T>Desde</T></p>
+                              <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1"><T>IVA incluido</T></p>
                               <p className="text-2xl font-black text-slate-900">
                                 {formatPrice(exp.displayPrice)}
                               </p>

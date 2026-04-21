@@ -16,7 +16,7 @@ export function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { error: dbError } = await supabase.from("contact_messages").insert([{ full_name: formData.name, email: formData.email, phone: formData.phone, message: formData.message }]);
+      const { error: dbError } = await supabase.from("contact_messages_explonix").insert([{ full_name: formData.name, email: formData.email, phone: formData.phone, message: formData.message }]);
       if (dbError) throw dbError;
       const response = await fetch("/api/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "CONTACT", ...formData, customerName: formData.name }) });
       if (!response.ok) throw new Error("No se pudo enviar");
@@ -44,7 +44,7 @@ export function Contact() {
               <T>Conecta</T><br/>
               <span className="text-cyan-400"><T>con nosotros.</T></span>
             </h2>
-            <p className="text-slate-400 font-medium text-lg max-w-md"><T>Nuestro equipo está listo para personalizar cada detalle de tu viaje.</T></p>
+            <p className="text-slate-400 font-medium text-lg max-w-md"><T>Nuestras líneas están abiertas. Envíanos las especificaciones de tu proyecto de viaje y nuestros agentes trazarán el plan de vuelo en menos de 24 horas.</T></p>
           </div>
           
           <div className="flex flex-col gap-4">
@@ -83,7 +83,7 @@ export function Contact() {
                 <label className="text-xs font-black uppercase text-slate-400"><T>Mensaje</T></label>
                 <span className="text-xs font-bold text-slate-300">{formData.message.length}/180</span>
               </div>
-              <Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="¿A dónde quieres ir?" rows={3} maxLength={180} className="border-0 border-b-2 border-slate-100 focus-visible:ring-0 focus-visible:border-primary rounded-none px-2 font-bold text-lg bg-transparent resize-none" />
+              <Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Mensaje" rows={3} maxLength={180} className="border-0 border-b-2 border-slate-100 focus-visible:ring-0 focus-visible:border-primary rounded-none px-2 font-bold text-lg bg-transparent resize-none" />
             </div>
 
             <div className="flex justify-end pt-4">

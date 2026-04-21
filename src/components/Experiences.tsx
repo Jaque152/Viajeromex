@@ -10,8 +10,8 @@ const experiences = [
   {
     id: 1,
     number: "01",
-    title: "Santuarios Naturales",
-    description: "Camina entre bosques milenarios donde el tiempo parece detenerse. Descubre la magia de los refugios naturales más impresionantes.",
+    title: "Ecosistemas Ocultos",
+    description: "Desconéctate del radar y adéntrate en reservas naturales milenarias con guías expertos en conservación.",
     icon: Mountain,
     color: "text-emerald-500",
     bgAccent: "group-hover:bg-emerald-500/5",
@@ -21,8 +21,8 @@ const experiences = [
   {
     id: 2,
     number: "02",
-    title: "Aventura Marina",
-    description: "Domina la energía del mar y experimenta la libertad de conectar con el océano Pacífico. Una experiencia única.",
+    title: "Dinámica Costera",
+    description: "Domina las corrientes del Pacífico. Logística completa para surf, buceo y expediciones oceánicas de alto impacto.",
     icon: Waves,
     color: "text-cyan-500",
     bgAccent: "group-hover:bg-cyan-500/5",
@@ -32,8 +32,8 @@ const experiences = [
   {
     id: 3,
     number: "03",
-    title: "Tradiciones Vivas",
-    description: "Adéntrate en el corazón de la cultura local a través de sus mitos y sus héroes. Vive la energía de nuestras tradiciones.",
+    title: "Inmersión Local",
+    description: "Conecta directamente con las raíces culturales de México. Acceso exclusivo a comunidades, ritos y patrimonio.",
     icon: Theater,
     color: "text-indigo-500",
     bgAccent: "group-hover:bg-indigo-500/5",
@@ -43,8 +43,8 @@ const experiences = [
   {
     id: 4,
     number: "04",
-    title: "Rutas Gastronómicas",
-    description: "Descubre los sabores auténticos de México en recorridos culinarios guiados por expertos locales.",
+    title: "Circuito Culinario",
+    description: "Mapeamos los sabores más auténticos del país. Desde alta cocina hasta los secretos mejor guardados.",
     icon: Footprints,
     color: "text-rose-500",
     bgAccent: "group-hover:bg-rose-500/5",
@@ -75,7 +75,7 @@ export function Experiences() {
           </p>
         </div>
 
-        {/* Tarjetas Editoriales (Sin iconos pequeños, con marcas de agua gigantes) */}
+        {/* Tarjetas Editoriales */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
           {experiences.map((exp) => (
             <Link
@@ -90,7 +90,7 @@ export function Experiences() {
 
                 <CardContent className="p-10 md:p-12 h-full flex flex-col relative z-10">
                   <div className="flex items-start justify-between mb-12">
-                    {/* Número tipográfico en lugar de ícono pequeño */}
+                    {/* Número tipográfico */}
                     <span className="text-6xl font-black text-foreground/10 group-hover:text-primary/20 transition-colors font-serif">
                       {exp.number}
                     </span>
