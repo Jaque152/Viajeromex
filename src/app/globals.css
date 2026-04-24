@@ -1,5 +1,5 @@
 /* globals.css */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300..900;1,300..900&family=Syne:wght@400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300..900;1,300..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -35,8 +35,7 @@
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 239 84% 67%;
-    
-    /* Radio más estructurado (estilo tech/SaaS) */
+
     --radius: 1rem; 
   }
 
@@ -68,13 +67,12 @@
     font-family: 'Archivo', sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     @apply tracking-tight;
   }
 }
 
 @layer utilities {
-  /* Glassmorphism ajustado a tonos fríos */
   .glass-panel {
     @apply bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_4px_24px_rgb(0,0,0,0.02)];
   }
@@ -82,7 +80,6 @@
     @apply bg-slate-900/50 border-slate-700/50 shadow-[0_4px_24px_rgb(0,0,0,0.2)];
   }
   
-  /* Nuevo degradado para textos destacados (Índigo a Cian) */
   .text-gradient-cool {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
   }
@@ -97,7 +94,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Scrollbar moderno en tonos fríos */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 10px; }

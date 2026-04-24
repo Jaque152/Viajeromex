@@ -62,22 +62,22 @@ export function Hero() {
           
           {/* Tarjeta Izquierda */}
           <div className="relative w-1/3 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl -rotate-6 translate-y-8 hover:rotate-0 hover:translate-y-0 transition-all duration-500 hover:z-20 group">
-             <div className="absolute inset-0 bg-[url('https://oem.com.mx/elsoldemexico/img/13723873/1729769072/BASE_LANDSCAPE/1200/image.webp')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
+             <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/30746580/pexels-photo-30746580.jpeg')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
              <div className="absolute bottom-4 left-4 glass-panel px-3 py-1.5 rounded-lg text-white text-xs font-bold border-white/20">
-                Oaxaca
+                Puebla
              </div>
           </div>
 
           {/* Tarjeta Central */}
           <div className="relative w-2/5 aspect-square md:aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] z-10 hover:scale-105 transition-all duration-500 group">
-             <div className="absolute inset-0 bg-[url('https://lugares.inah.gob.mx/sites/default/files/zonas/185_A_slider_chichen_itza_3.jpg')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
+             <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/12665188/pexels-photo-12665188.jpeg')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
              <div className="absolute bottom-6 left-6 right-6">
                 <div className="glass-panel px-4 py-3 rounded-2xl flex items-center justify-between text-white border-white/20">
                    <div className="flex items-center gap-3">
                      <div className="p-2 bg-primary rounded-full"><MapPin className="w-4 h-4" /></div>
-                     <span className="text-sm md:text-base font-bold tracking-wide">Chichén Itzá</span>
+                     <span className="text-sm md:text-base font-bold tracking-wide">CDMX</span>
                    </div>
                 </div>
              </div>
@@ -85,10 +85,10 @@ export function Hero() {
 
           {/* Tarjeta Derecha */}
           <div className="relative w-1/3 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl rotate-6 translate-y-8 hover:rotate-0 hover:translate-y-0 transition-all duration-500 hover:z-20 group">
-             <div className="absolute inset-0 bg-[url('https://www.delphinusworld.com/hubfs/playas%20y%20cenotes%20riviera%20maya.webp')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
+             <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/22912077/pexels-photo-22912077.jpeg')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
              <div className="absolute bottom-4 left-4 glass-panel px-3 py-1.5 rounded-lg text-white text-xs font-bold border-white/20">
-                Riviera Maya
+                Los Cabos
              </div>
           </div>
 

@@ -134,7 +134,7 @@ CREATE TABLE public.fifa_experiences_explonix (
   order_index INTEGER DEFAULT 0
 );
 
--- CREATE TABLE public.translations_explonix (
+-- CREATE TABLE public.translations (
 --   id SERIAL PRIMARY KEY,
 --   key_text TEXT NOT NULL,
 --   lang VARCHAR(5) NOT NULL,
