@@ -1,60 +1,48 @@
 "use client";
-import { T } from "@/components/T";
+
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { T } from "@/components/T";
 
-interface LegalPageProps {
-  title: string;
-  sections: {
-    heading: string;
-    content: string;
-  }[];
-}
-
-export function LegalPage({ title, sections }: LegalPageProps) {
+export default function LegalPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="flex-1 pt-40 pb-32">
-        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-          
-          <div className="flex flex-col lg:flex-row gap-16">
-            
-            {/* Lado Izquierdo: Título Masivo e Índice Sticky */}
-            <div className="w-full lg:w-1/3 lg:sticky lg:top-40 h-fit">
-              <h1 className="text-5xl md:text-6xl font-black mb-8 tracking-tighter text-slate-900 leading-[1.1]">
-                <T>{title}</T>
-              </h1>
-              <div className="hidden lg:block border-l-2 border-slate-100 pl-6 space-y-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6"><T>Contenido</T></p>
-                {sections.map((section, idx) => (
-                  <p key={idx} className="text-sm font-bold text-slate-500 hover:text-primary cursor-pointer transition-colors line-clamp-1">
-                    <T>{section.heading}</T>
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* Lado Derecho: Contenido de texto (Lectura limpia) */}
-            <div className="w-full lg:w-2/3">
-              <div className="space-y-16">
-                {sections.map((section, index) => (
-                  <div key={index} className="scroll-mt-32">
-                    <h2 className="text-3xl font-black text-slate-900 mb-6 tracking-tight">
-                      <T>{section.heading}</T>
-                    </h2>
-                    <p className="text-slate-600 font-medium text-lg leading-relaxed whitespace-pre-line">
-                      <T>{section.content}</T>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+      
+      <main className="flex-1 pt-40 pb-24">
+        <div className="container mx-auto px-6 max-w-3xl animate-fade-up">
+          <div className="text-center mb-16 border-b border-border pb-10">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-secondary mb-4 block">
+              <T>Actualizado: Octubre 2026</T>
+            </span>
+            <h1 className="text-4xl md:text-5xl font-serif text-foreground">
+              <T>Aviso de Privacidad</T>
+            </h1>
           </div>
 
+          <div className="prose prose-sm md:prose-base prose-stone max-w-none text-muted-foreground font-light leading-loose">
+            <p>
+              <T>En Epicúreo, valoramos y respetamos su privacidad. Este documento describe cómo recopilamos, utilizamos y protegemos su información personal al interactuar con nuestros servicios y plataformas.</T>
+            </p>
+            
+            <h3 className="text-xl font-serif text-foreground mt-10 mb-4"><T>1. Recopilación de Datos</T></h3>
+            <p>
+              <T>Podemos recopilar información personal como su nombre, dirección de correo electrónico, número de teléfono y detalles de facturación cuando solicita una cotización o realiza una reserva a través de nuestro sitio web.</T>
+            </p>
+
+            <h3 className="text-xl font-serif text-foreground mt-10 mb-4"><T>2. Uso de la Información</T></h3>
+            <p>
+              <T>La información proporcionada se utiliza exclusivamente para la gestión de sus reservas, la coordinación de logística en experiencias gastronómicas y, si usted lo autoriza, para el envío de boletines exclusivos y promociones.</T>
+            </p>
+
+            <h3 className="text-xl font-serif text-foreground mt-10 mb-4"><T>3. Protección de Datos</T></h3>
+            <p>
+              <T>Implementamos medidas de seguridad de alto nivel, incluyendo encriptación de datos, para proteger su información contra accesos no autorizados, alteraciones o divulgación.</T>
+            </p>
+          </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );

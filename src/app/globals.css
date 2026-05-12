@@ -1,5 +1,5 @@
 /* globals.css */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300..900;1,300..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@200..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,54 +7,32 @@
 
 @layer base {
   :root {
-    /* Explonix Palette: Digital Ocean (Icy White, Slate, Electric Indigo) */
-    --background: 210 40% 98%; /* Icy White / Gris muy claro azulado */
-    --foreground: 222 47% 11%; /* Deep Slate / Azul marino casi negro */
-    --card: 0 0% 100%; /* Blanco puro */
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    /* Paleta Estrella Michelin: Alabastro, Espresso, Bordeaux y Champagne */
+    --background: 60 30% 98%; /* Alabaster White (#FCFCF9) - Mucho aire y limpieza */
+    --foreground: 0 0% 12%; /* Espresso Charcoal (#1E1E1E) */
     
-    /* Electric Indigo (#6366F1) - Color de acción principal */
-    --primary: 239 84% 67%; 
-    --primary-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
     
-    /* Vivid Cyan (#06B6D4) - Para acentos secundarios */
-    --secondary: 189 94% 43%; 
-    --secondary-foreground: 222 47% 11%;
+    --popover: 60 30% 98%;
+    --popover-foreground: 0 0% 12%;
     
-    --muted: 214 32% 91%;
-    --muted-foreground: 215 16% 47%; /* Gris azulado para textos secundarios */
+    /* Acento Primario: Bordeaux / Vino Tinto (#6B1F2A) */
+    --primary: 351 55% 27%; 
+    --primary-foreground: 60 30% 98%;
     
-    --accent: 189 94% 43%;
-    --accent-foreground: 222 47% 11%;
+    /* Acento Secundario: Champagne / Dorado Suave (#C19A6B) */
+    --secondary: 33 42% 59%; 
+    --secondary-foreground: 0 0% 12%;
     
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --muted: 0 0% 90%; 
+    --muted-foreground: 0 0% 45%; 
     
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 239 84% 67%;
-
-    --radius: 1rem; 
-  }
-
-  .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 15%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 15%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 239 84% 75%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 189 94% 50%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 222 47% 20%;
-    --muted-foreground: 215 20% 65%;
-    --border: 222 47% 20%;
-    --input: 222 47% 20%;
-    --ring: 239 84% 75%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 351 55% 27%;
+    
+    --radius: 0px; /* Cero bordes redondeados, elegancia pura y afilada */
   }
 }
 
@@ -64,38 +42,57 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Manrope', sans-serif;
+    /* Suavizado de fuentes para Mac/iOS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    @apply tracking-tight;
+    font-family: 'Cormorant Garamond', serif;
   }
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_4px_24px_rgb(0,0,0,0.02)];
+  /* Animación de entrada elegante (Fade Up) */
+  .animate-fade-up {
+    animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
   }
-  .dark .glass-panel {
-    @apply bg-slate-900/50 border-slate-700/50 shadow-[0_4px_24px_rgb(0,0,0,0.2)];
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  
+  /* Animación de zoom lento en fotos (Ken Burns) */
+  .animate-ken-burns {
+    animation: kenBurns 20s ease-out infinite alternate;
   }
   
-  .text-gradient-cool {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  /* Línea decorativa animada */
+  .animated-line::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: hsl(var(--primary));
+    transition: width 0.4s ease-out;
   }
-
-  .animate-fade-up {
-    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  .animated-line:hover::after {
+    width: 100%;
   }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+@keyframes kenBurns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--secondary)); }
