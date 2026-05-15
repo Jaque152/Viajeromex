@@ -1,352 +1,231 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { supabase } from '@/lib/supabase';
+import { useLocale } from 'next-intl';
+import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useCart } from "@/context/CartContext";
-import { Experience, ActivityPackage } from "@/lib/types"; 
+import { supabase } from '@/lib/supabase';
+import { Loader2, Calendar as CalendarIcon, MapPin, Clock } from "lucide-react";
 import { T } from "@/components/T";
-import {
-  Check, Minus, Plus, Loader2, Info, AlertTriangle, X, MapPin, Clock, CalendarDays, Compass, Zap
-} from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
-export default function ExperienceDetailPage() {
+export default function ExperienceDetail() {
   const params = useParams();
+  const locale = useLocale();
   const router = useRouter();
   const { addToCart } = useCart();
-
-  const [experience, setExperience] = useState<Experience | null>(null);
-  const [packages, setPackages] = useState<ActivityPackage[]>([]);
+  
+  const [experience, setExperience] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
+  // Estados para reserva
   const [selectedDate, setSelectedDate] = useState("");
-  const [people, setPeople] = useState(1);
-  const [selectedPackageId, setSelectedPackageId] = useState<number | "">("");
-  const [isAdding, setIsAdding] = useState(false);
+  const [pax, setPax] = useState(1);
+  const [selectedPackage, setSelectedPackage] = useState<any>(null);
 
   useEffect(() => {
-    async function loadFullDetail() {
-      if (!params.id) return;
-      setLoading(true);
-      try {
-        const { data: activity } = await supabase
-          .from('activities_explonix')
-          .select('*, categories:categories_explonix(name, slug)')
-          .eq('id', params.id)
-          .single();
+    async function fetchDetail() {
+      const { data } = await supabase
+        .from('activities_mextripia')
+        .select(`
+          *,
+          categories:categories_mextripia(name, slug),
+          packages:activity_packages_mextripia(*)
+        `)
+        .eq('id', params.id)
+        .single();
 
-        const { data: paks } = await supabase
-          .from('activity_packages_explonix')
-          .select('*')
-          .eq('activity_id', params.id)
-          .order('id', { ascending: true });
-
-        if (activity) setExperience(activity);
-        
-        if (paks && paks.length > 0) {
-          setPackages(paks);
-          setSelectedPackageId(paks[0].id);
+      if (data) {
+        // Ordenamos los paquetes por min_pax para asegurar la lógica correcta
+        if (data.packages) {
+          data.packages.sort((a: any, b: any) => a.min_pax - b.min_pax);
         }
-      } catch (error) {
-        console.error("Error loadFullDetail:", error);
-      } finally {
-        setLoading(false);
+        setExperience(data);
       }
+      setLoading(false);
     }
-    loadFullDetail();
+    fetchDetail();
   }, [params.id]);
 
-  const selectedPackage = packages.find(p => p.id === selectedPackageId);
-  
-  const formatPrice = (price: number) => {
-    const formatter = new Intl.NumberFormat("es-MX", {
-      style: "currency", currency: "MXN", minimumFractionDigits: 0,
-    });
-    return `${formatter.format(price)} MXN`;
-  };
+  // LÓGICA CORE: Asignación dinámica de precio según el número de personas
+  useEffect(() => {
+    if (experience?.packages && experience.packages.length > 0) {
+      // Encontrar el paquete que coincida con el número de PAX actual
+      const matchedPackage = experience.packages.find((pkg: any) => {
+        const max = pkg.max_pax || 999; // Si no hay máximo en la BD, asumimos infinito
+        return pax >= pkg.min_pax && pax <= max;
+      });
+
+      if (matchedPackage) {
+        setSelectedPackage(matchedPackage);
+      } else {
+        // Si por alguna razón excede todos los límites, asignamos el último paquete (mayor descuento)
+        setSelectedPackage(experience.packages[experience.packages.length - 1]);
+      }
+    }
+  }, [pax, experience]);
 
   const handleAddToCart = () => {
-    if (!experience || !selectedDate || !selectedPackage) return;
-    setIsAdding(true);
-
-    addToCart({
+    if (!selectedDate || !selectedPackage) return;
+    const cartItem = {
       packageId: selectedPackage.id,
       experience: experience,
-      date: selectedDate,
-      people: people,
       levelName: selectedPackage.package_name,
-      pricePerPerson: Number(selectedPackage.price),
-    });
-
-    setTimeout(() => {
-      setIsAdding(false);
-      router.push("/carrito");
-    }, 500);
+      date: selectedDate,
+      people: pax,
+      pricePerPerson: selectedPackage.price,
+      totalPrice: selectedPackage.price * pax
+    };
+    addToCart(cartItem);
+    router.push(`/${locale}/carrito`);
   };
 
-  const minDateStr = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  if (!experience) return <div className="min-h-screen flex items-center justify-center bg-background"><T>Experiencia no encontrada</T></div>;
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Loader2 className="w-12 h-12 animate-spin text-primary" />
-    </div>
-  );
-
-  if (!experience) return null;
-
-  const mainImage = experience.images?.length > 0 ? experience.images[0] : '/placeholder.jpg';
-
-  const WidgetForm = () => (
-    <div className="bg-white border border-slate-100 shadow-2xl shadow-primary/5 rounded-[2.5rem] overflow-hidden">
-      <div className="bg-slate-50 p-6 border-b border-slate-100 flex items-center gap-3">
-        <Zap className="w-5 h-5 text-cyan-500" />
-        <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">
-          <T>Reserva tu lugar</T>
-        </h2>
-      </div>
-      
-      <div className="p-8">
-        {/* Selector Dinámico */}
-        <div className="mb-8 space-y-3">
-          <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1"><T>Elige una opción</T></label>
-          <select 
-            className="w-full h-14 px-5 bg-slate-50 border-none text-slate-900 font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer appearance-none"
-            value={selectedPackageId}
-            onChange={(e) => setSelectedPackageId(Number(e.target.value))}
-          >
-            {packages.map(pkg => (
-              <option key={pkg.id} value={pkg.id}>{pkg.package_name}</option>
-            ))}
-          </select>
-        </div>
-
-        {selectedPackage && (
-          <div className="mb-10 animate-fade-in">
-            <div className="flex flex-col mb-6 pb-6 border-b border-slate-100">
-              <span className="font-black text-xl text-slate-900 mb-2"><T>{selectedPackage.package_name}</T></span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black text-primary tracking-tighter">{formatPrice(selectedPackage.price)}</span>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest"><T>IVA incl.</T></span>
-              </div>
-            </div>
-            
-            {selectedPackage.features?.incluye && (
-              <div className="mb-6">
-                <p className="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest"><T>Esta opción incluye:</T></p>
-                <ul className="space-y-3">
-                  {selectedPackage.features.incluye.map((inc, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm font-medium text-slate-700 leading-snug">
-                      <div className="w-5 h-5 rounded-full bg-cyan-100 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="w-3 h-3 text-cyan-600"/> 
-                      </div>
-                      <T>{inc}</T>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {selectedPackage.features?.no_incluye && (
-              <div className="mt-6 pt-6 border-t border-slate-100">
-                <p className="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest"><T>No Incluye:</T></p>
-                <ul className="space-y-3">
-                  {selectedPackage.features.no_incluye.map((noInc, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm font-medium text-slate-500 leading-snug opacity-80">
-                      <div className="w-5 h-5 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-0.5">
-                        <X className="w-3 h-3 text-red-400"/>
-                      </div>
-                      <T>{noInc}</T>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1"><T>Fecha:</T></label>
-              <Input 
-                type="date" 
-                value={selectedDate} 
-                onChange={(e) => setSelectedDate(e.target.value)} 
-                min={minDateStr} 
-                className="rounded-xl h-14 bg-slate-50 font-bold text-slate-700 border-none focus-visible:ring-primary px-4" 
-              />
-            </div>
-            <div className="space-y-3">
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1"><T>Viajeros:</T></label>
-              <div className="flex items-center justify-between rounded-xl h-14 bg-slate-50 overflow-hidden">
-                <button className="h-full w-12 flex items-center justify-center hover:bg-slate-200 text-slate-700 transition-colors" onClick={() => setPeople(Math.max(1, people - 1))}><Minus className="w-4 h-4"/></button>
-                <span className="flex-1 text-center font-black text-lg text-slate-900">{people}</span>
-                <button className="h-full w-12 flex items-center justify-center hover:bg-slate-200 text-slate-700 transition-colors" onClick={() => setPeople(people + 1)}><Plus className="w-4 h-4"/></button>
-              </div>
-            </div>
-          </div>
-
-          <Button 
-            className="w-full bg-gradient-to-r from-primary to-cyan-500 hover:opacity-90 text-white font-black h-16 rounded-2xl shadow-[0_10px_30px_rgba(99,102,241,0.3)] uppercase tracking-widest text-sm transition-all mt-6"
-            onClick={handleAddToCart}
-            disabled={!selectedDate || isAdding}
-          >
-            {isAdding ? <Loader2 className="animate-spin w-5 h-5 mr-3 inline" /> : null}
-            {isAdding ? <T>Añadiendo...</T> : <T>Añadir al carrito</T>}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+  const mainImage = experience.images?.[0] || '/placeholder.jpg';
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-1 pt-32 pb-24">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           
-          {/* Layout Mobile: Título aparece arriba */}
-          <div className="lg:hidden mb-8">
-             <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
+          {/* Título Principal */}
+          <div className="mb-10 animate-fade-in-up">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-foreground leading-tight mb-4">
               <T>{experience.title}</T>
-             </h1>
-             <div className="flex flex-wrap items-center gap-4 text-xs font-bold tracking-widest uppercase text-slate-400">
-                <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg"><MapPin className="w-4 h-4 text-cyan-500" /> <T>{experience.location}</T></div>
-                {experience.duration && (
-                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg"><Clock className="w-4 h-4 text-cyan-500" /> <T>{experience.duration}</T></div>
-                )}
-             </div>
+            </h1>
           </div>
 
-          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="flex flex-col lg:flex-row gap-16 items-start">
             
-            {/* COLUMNA IZQUIERDA: Imagen y Detalles */}
-            <div className="lg:col-span-7 space-y-16 w-full">
+            {/* Columna Izquierda: Imagen y Detalles Textuales */}
+            <div className="w-full lg:w-7/12 animate-fade-in-up delay-150">
               
-              <div className="w-full aspect-[4/3] md:aspect-[16/10] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50">
-                <img src={mainImage} alt={experience.title} className="w-full h-full object-cover" />
+              <div className="relative aspect-[4/3] w-full mb-10 bg-muted/20">
+                <Image src={mainImage} alt={experience.title} fill className="object-cover" priority />
               </div>
 
-              {/* Layout Mobile: Widget debajo de la imagen */}
-              <div className="lg:hidden w-full">
-                 <WidgetForm />
-              </div>
+              <div className="prose prose-stone max-w-none text-muted-foreground font-light leading-relaxed mb-10">
+                <p className="text-lg text-foreground font-medium mb-8"><T>{experience.description}</T></p>
+                
+                <h3 className="text-2xl font-serif text-foreground mb-4"><T>Incluye:</T></h3>
+                <ul className="space-y-2 mb-8 list-disc pl-5">
+                  {experience.included_general?.map((item: string, i: number) => (
+                    <li key={i}><T>{item}</T></li>
+                  ))}
+                </ul>
 
-              {/* Qué harás */}
-              {experience.what_you_will_do && experience.what_you_will_do.length > 0 && (
-                <section>
-                  <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-xl"><Compass className="w-6 h-6 text-primary" /></div>
-                    <T>Qué harás</T>
-                  </h2>
-                  <ul className="space-y-5">
-                    {experience.what_you_will_do.map((item, i) => (
-                      <li key={i} className="flex items-start gap-4">
-                        <div className="w-3 h-3 rounded-full bg-cyan-400 mt-2 shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.5)]"></div>
-                        <span className="text-slate-600 font-medium leading-relaxed text-lg"><T>{item}</T></span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {/* Descripción */}
-              <section>
-                <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight"><T>Descripción general</T></h2>
-                <div className="text-slate-600 font-medium leading-relaxed space-y-6 whitespace-pre-wrap text-lg">
-                  <T>{experience.description}</T>
-                </div>
-              </section>
-
-              {/* Itinerario */}
-              {experience.itinerary && experience.itinerary.length > 0 && (
-                <section className="bg-slate-50 p-8 md:p-12 rounded-[2.5rem] border border-slate-100">
-                  <h2 className="text-3xl font-black text-slate-900 mb-10 tracking-tight flex items-center gap-3">
-                    <div className="p-2 bg-cyan-100 rounded-xl"><CalendarDays className="w-6 h-6 text-cyan-600" /></div>
-                    <T>Itinerario de la experiencia</T>
-                  </h2>
-                  <div className="relative border-l-2 border-dashed border-primary/30 ml-4 space-y-10">
-                    {experience.itinerary.map((step, i) => (
-                      <div key={i} className="relative pl-10">
-                        <div className="absolute w-5 h-5 bg-primary rounded-full -left-[11px] top-1 ring-8 ring-slate-50 shadow-sm"></div>
-                        <p className="text-slate-700 font-bold text-lg leading-relaxed"><T>{step}</T></p>
-                      </div>
-                    ))}
+                <div className="bg-white p-6 border border-border mt-8 flex flex-col gap-4 shadow-sm">
+                  <div className="flex items-center gap-3 text-sm">
+                    <Clock className="w-5 h-5 text-secondary" />
+                    <strong><T>Duración:</T></strong> <T>{experience.duration}</T>
                   </div>
-                </section>
-              )}
-
-              {/* Qué Llevar */}
-              {experience.requirements && experience.requirements.length > 0 && (
-                <section>
-                  <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-xl"><Info className="w-6 h-6 text-primary"/></div>
-                    <T>¿Qué llevar?</T>
-                  </h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {experience.requirements.map((req, i) => (
-                      <div key={i} className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                        <div className="w-8 h-8 rounded-full bg-cyan-50 flex items-center justify-center shrink-0">
-                          <Check className="w-4 h-4 text-cyan-600"/>
-                        </div>
-                        <span className="text-sm text-slate-700 font-bold"><T>{req}</T></span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Información Importante */}
-              {experience.important_info && Object.keys(experience.important_info).length > 0 && (
-                 <section className="bg-slate-900 p-8 md:p-12 rounded-[2.5rem] shadow-xl">
-                    <h2 className="text-3xl font-black text-white mb-10 tracking-tight flex items-center gap-3">
-                      <div className="p-2 bg-white/10 rounded-xl"><AlertTriangle className="w-6 h-6 text-cyan-400"/></div>
-                      <T>Información Importante</T>
-                    </h2>
-                    <div className="grid sm:grid-cols-2 gap-10">
-                      {Object.entries(experience.important_info).map(([category, items], idx) => (
-                        <div key={idx}>
-                          <h3 className="font-black text-white mb-5 uppercase tracking-widest text-sm opacity-80"><T>{category}</T></h3>
-                          <ul className="space-y-4 text-slate-300 font-medium text-sm">
-                            {(items as string[]).map((item, i) => (
-                              <li key={i} className="flex items-start gap-3 leading-relaxed">
-                                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
-                                <span><T>{item}</T></span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+                  {experience.important_info?.["Horario de inicio"] && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Clock className="w-5 h-5 text-secondary" />
+                      <strong><T>Horario de inicio:</T></strong> <T>{experience.important_info["Horario de inicio"][0]}</T>
                     </div>
-                 </section>
-              )}
+                  )}
+                  <div className="flex items-center gap-3 text-sm">
+                    <MapPin className="w-5 h-5 text-secondary" />
+                    <strong><T>Punto de encuentro:</T></strong> <T>{experience.location}</T>
+                  </div>
+                </div>
 
+                {/* Notas */}
+                {experience.important_info?.Notas && (
+                  <div className="mt-8 text-xs italic text-muted-foreground">
+                    {experience.important_info.Notas.map((nota: string, i: number) => (
+                      <p key={i} className="mb-1 text-primary">* <T>{nota}</T></p>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* COLUMNA DERECHA: Título (Web) + Widget Sticky */}
-            <div className="hidden lg:flex lg:col-span-5 flex-col space-y-8 sticky top-32">
+            {/* Columna Derecha: Tabla de Precios y Reserva */}
+            <div className="w-full lg:w-5/12 sticky top-32 animate-fade-in-up delay-300">
               
-              <div>
-                <h1 className="text-5xl font-black text-slate-900 mb-6 tracking-tighter leading-[1.1]">
-                  <T>{experience.title}</T>
-                </h1>
-                <div className="flex flex-wrap items-center gap-4 text-xs font-bold tracking-widest uppercase text-slate-400">
-                  <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl"><MapPin className="w-4 h-4 text-cyan-500" /> <T>{experience.location}</T></div>
-                  {experience.duration && (
-                    <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl"><Clock className="w-4 h-4 text-cyan-500" /> <T>{experience.duration}</T></div>
+              <div className="bg-white p-8 border border-border shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
+                <h3 className="text-2xl font-serif text-foreground mb-6"><T>Tabla de precios</T></h3>
+                
+                {/* Tabla Dinámica */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-2 text-[10px] uppercase tracking-widest text-muted-foreground border-b border-border pb-3 mb-3">
+                    <div><T>Personas</T></div>
+                    <div className="text-right"><T>Precio pp (IVA Inc)</T></div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {experience.packages?.map((pkg: any) => (
+                      <div 
+                        key={pkg.id} 
+                        onClick={() => setPax(pkg.min_pax)} // Al hacer click, auto-ajusta el número de personas al mínimo del nivel
+                        className={`grid grid-cols-2 text-sm p-3 cursor-pointer transition-colors border-l-2 ${selectedPackage?.id === pkg.id ? 'bg-foreground text-background font-medium border-primary' : 'hover:bg-muted/30 text-foreground border-transparent'}`}
+                        title="Haz clic para seleccionar este volumen de asistentes"
+                      >
+                        <div><T>{pkg.package_name}</T></div>
+                        <div className="text-right">
+                          {new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(pkg.price)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Controles de Reserva */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2"><T>Fecha de reservación</T></h4>
+                    <div className="flex items-center border-b border-border py-2 focus-within:border-primary transition-colors">
+                      <CalendarIcon className="w-4 h-4 text-primary mr-3" />
+                      <input 
+                        type="date" 
+                        className="w-full bg-transparent outline-none text-sm text-foreground font-medium"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        min={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-6 items-end">
+                    <div className="w-1/3">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2"><T>Asistentes</T></h4>
+                      <input 
+                        type="number" 
+                        min={1} 
+                        value={pax} 
+                        onChange={(e) => setPax(parseInt(e.target.value) || 1)}
+                        className="w-full border-b border-border bg-transparent py-2 text-center text-lg font-medium outline-none focus:border-primary transition-colors" 
+                      />
+                    </div>
+                    
+                    <button 
+                      onClick={handleAddToCart}
+                      disabled={!selectedDate}
+                      className="flex-1 bg-transparent border border-foreground text-foreground h-[45px] text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-foreground hover:text-background transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <T>Añadir a la bolsa</T>
+                    </button>
+                  </div>
+                  
+                  {selectedPackage && (
+                     <div className="pt-4 mt-4 border-t border-border flex justify-between items-center text-sm font-medium">
+                        <span className="text-muted-foreground"><T>Total estimado:</T></span>
+                        <span className="text-lg text-primary">{new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(selectedPackage.price * pax)}</span>
+                     </div>
                   )}
+
                 </div>
               </div>
-
-              <WidgetForm />
               
             </div>
-            
+
           </div>
         </div>
       </main>

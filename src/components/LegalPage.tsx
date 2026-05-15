@@ -22,7 +22,7 @@ export default function LegalPage() {
 
           <div className="prose prose-sm md:prose-base prose-stone max-w-none text-muted-foreground font-light leading-loose">
             <p>
-              <T>En Epicúreo, valoramos y respetamos su privacidad. Este documento describe cómo recopilamos, utilizamos y protegemos su información personal al interactuar con nuestros servicios y plataformas.</T>
+              <T>En Mextripia, valoramos y respetamos su privacidad. Este documento describe cómo recopilamos, utilizamos y protegemos su información personal al interactuar con nuestros servicios y plataformas.</T>
             </p>
             
             <h3 className="text-xl font-serif text-foreground mt-10 mb-4"><T>1. Recopilación de Datos</T></h3>

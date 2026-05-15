@@ -1,4 +1,4 @@
-# Explonix - Plataforma Transaccional
+# mextripia - Plataforma Transaccional
 
 
 ## Rutas del Proyecto

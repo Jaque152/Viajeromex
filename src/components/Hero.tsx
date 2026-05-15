@@ -29,17 +29,6 @@ export function Hero() {
                 <T>Diseñamos inmersiones gastronómicas exclusivas. Desde la cosecha en la tierra hasta las mesas más reservadas de México. Una travesía sensorial para paladares exigentes.</T>
               </p>
               
-              <div className="flex items-center gap-8">
-                <Link 
-                  href={`/${locale}/experiencias`} 
-                  className="group flex items-center gap-4 border-b border-foreground pb-2 hover:border-primary transition-colors"
-                >
-                  <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground group-hover:text-primary transition-colors">
-                    <T>Ver Expediciones</T>
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-foreground group-hover:text-primary group-hover:translate-x-2 transition-all duration-300" />
-                </Link>
-              </div>
             </div>
           </div>
 
@@ -56,20 +45,11 @@ export function Hero() {
                 priority
               />
             </div>
-            {/* Elemento decorativo */}
-            <div className="hidden lg:block absolute bottom-[15%] -left-12 w-24 h-[1px] bg-secondary z-20"></div>
           </div>
 
         </div>
       </div>
       
-      {/* Scroll indicator */}
-      <div className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 flex-col items-center gap-2 animate-fade-up delay-300">
-        <span className="text-[9px] uppercase tracking-widest text-muted-foreground [writing-mode:vertical-lr] rotate-180">Descubrir</span>
-        <div className="w-[1px] h-12 bg-secondary/30 relative overflow-hidden">
-          <div className="w-full h-full bg-secondary absolute top-0 left-0 animate-[slideDown_2s_ease-in-out_infinite]"></div>
-        </div>
-      </div>
     </section>
   );
 }

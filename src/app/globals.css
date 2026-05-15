@@ -1,5 +1,5 @@
 /* globals.css */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,32 +7,30 @@
 
 @layer base {
   :root {
-    /* Paleta Estrella Michelin: Alabastro, Espresso, Bordeaux y Champagne */
-    --background: 60 30% 98%; /* Alabaster White (#FCFCF9) - Mucho aire y limpieza */
-    --foreground: 0 0% 12%; /* Espresso Charcoal (#1E1E1E) */
+    /* Paleta Orgánica Premium: Perla, Bosque Oscuro, Arena Cálida */
+    --background: 40 33% 98%; /* Warm Pearl (#FAF9F6) - Todo el fondo será así */
+    --foreground: 147 30% 15%; /* Forest Dark (#1B2B22) - Textos casi negros pero verdes */
     
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 12%;
+    --card: 0 0% 100%; 
+    --card-foreground: 147 30% 15%;
     
-    --popover: 60 30% 98%;
-    --popover-foreground: 0 0% 12%;
+    /* Acento Primario: Sand / Caramel (#C9A27E) */
+    --primary: 30 43% 64%; 
+    --primary-foreground: 0 0% 100%;
     
-    /* Acento Primario: Bordeaux / Vino Tinto (#6B1F2A) */
-    --primary: 351 55% 27%; 
-    --primary-foreground: 60 30% 98%;
+    /* Acento Secundario: Verde Oliva (#4A5D23) */
+    --secondary: 78 45% 25%; 
+    --secondary-foreground: 40 33% 98%;
     
-    /* Acento Secundario: Champagne / Dorado Suave (#C19A6B) */
-    --secondary: 33 42% 59%; 
-    --secondary-foreground: 0 0% 12%;
+    --muted: 40 20% 92%; 
+    --muted-foreground: 147 10% 40%; 
     
-    --muted: 0 0% 90%; 
-    --muted-foreground: 0 0% 45%; 
+    --border: 40 15% 85%;
+    --input: 40 15% 85%;
+    --ring: 30 43% 64%;
     
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
-    --ring: 351 55% 27%;
-    
-    --radius: 0px; /* Cero bordes redondeados, elegancia pura y afilada */
+    /* Bordes con curvas muy suaves y orgánicas */
+    --radius: 1.5rem; 
   }
 }
 
@@ -42,57 +40,24 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Manrope', sans-serif;
-    /* Suavizado de fuentes para Mac/iOS */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Montserrat', sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'DM Serif Display', serif;
+    font-weight: 400;
   }
 }
 
 @layer utilities {
-  /* Animación de entrada elegante (Fade Up) */
-  .animate-fade-up {
-    animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  .animate-fade-in-up {
+    animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     opacity: 0;
   }
-  .delay-100 { animation-delay: 100ms; }
-  .delay-200 { animation-delay: 200ms; }
+  .delay-150 { animation-delay: 150ms; }
   .delay-300 { animation-delay: 300ms; }
-  
-  /* Animación de zoom lento en fotos (Ken Burns) */
-  .animate-ken-burns {
-    animation: kenBurns 20s ease-out infinite alternate;
-  }
-  
-  /* Línea decorativa animada */
-  .animated-line::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: hsl(var(--primary));
-    transition: width 0.4s ease-out;
-  }
-  .animated-line:hover::after {
-    width: 100%;
-  }
 }
 
-@keyframes fadeUp {
-  0% { opacity: 0; transform: translateY(40px); }
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
   100% { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes kenBurns {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.1); }
-}
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--secondary)); }

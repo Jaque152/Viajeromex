@@ -15,7 +15,7 @@ export function Footer() {
         {/* Cabecera del Footer: Marca 100% visible */}
         <div className="text-center md:text-left mb-16 border-b border-background/10 pb-10">
           <Link href={`/${locale}/`} className="text-4xl md:text-5xl font-serif font-medium text-background tracking-widest hover:text-primary transition-colors">
-            EPICÚREO<span className="text-secondary">.</span>
+            Mextripia<span className="text-secondary">.</span>
           </Link>
         </div>
 
@@ -33,14 +33,11 @@ export function Footer() {
           {/* Columna 2: Contacto */}
           <div className="flex flex-col gap-5 text-[11px] uppercase tracking-[0.2em] font-bold">
             <span className="text-secondary mb-2"><T>Contacto</T></span>
-            <a href="mailto:contacto@epicuro.com" className="hover:text-background/70 transition-colors flex items-center justify-center md:justify-start gap-3">
-              <Mail className="w-4 h-4 text-secondary" /> contacto@epicuro.com
+            <a href="mailto:atencion@mextripia.com" className="hover:text-background/70 transition-colors flex items-center justify-center md:justify-start gap-3">
+              <Mail className="w-4 h-4 text-secondary" /> atencion@mextripia.com
             </a>
             <a href="tel:+5255555555" className="hover:text-background/70 transition-colors flex items-center justify-center md:justify-start gap-3">
               <Phone className="w-4 h-4 text-secondary" /> +52 (55) 5555 5555
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-background/70 transition-colors flex items-center justify-center md:justify-start gap-3">
-              <Instagram className="w-4 h-4 text-secondary" /> Instagram
             </a>
           </div>
 
@@ -74,7 +71,7 @@ export function Footer() {
 
           {/* Copyright */}
           <div className="text-[10px] font-light tracking-widest text-background/50 uppercase">
-            <span>© {new Date().getFullYear()} EPICÚREO. <T>Todos los derechos reservados.</T></span>
+            <span>© {new Date().getFullYear()} Mextripia. <T>Todos los derechos reservados.</T></span>
           </div>
           
         </div>

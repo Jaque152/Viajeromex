@@ -9,8 +9,8 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: "Explonix | Redefiniendo la Exploración y el Viaje",
-  description: "Curamos itinerarios a la medida y experiencias de alto nivel. Descubre los destinos más asombrosos con el respaldo y la exclusividad de Explonix.",
+  title: "Mextripia - Curaduría de Experiencias Personalizadas",
+  description: "Curamos itinerarios a la medida y experiencias de alto nivel. Descubre los destinos más asombrosos con el respaldo y la exclusividad de Mextripia.",
 };
 
 export default async function RootLayout({
