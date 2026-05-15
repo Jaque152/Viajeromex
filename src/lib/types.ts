@@ -28,6 +28,7 @@ export interface Experience {
   included_general?: string[]; 
   category_id: number;
   categories?: Category; 
+  packages?: ActivityPackage[]; // <--- ¡Añadimos esto aquí!
 }
 
 export interface PackageFeatures {
@@ -40,9 +41,9 @@ export interface ActivityPackage {
   activity_id: number;
   package_name: string; 
   price: number; 
-  features: PackageFeatures; 
+  features: null; 
   min_pax: number; 
-  max_pax?: number; 
+  max_pax?: number | null; 
   is_active: boolean; 
 }
 
@@ -116,7 +117,7 @@ export interface CartItem {
   id?: number; 
   sessionId?: string; 
   packageId: number; 
-  experience: Experience;
+  experience: Experience; // <--- Ahora aceptará perfectamente la experiencia de la página
   levelName: string; 
   date: string; 
   time?: string; 
@@ -124,7 +125,6 @@ export interface CartItem {
   pricePerPerson: number;
   totalPrice: number; 
 }
-
 export interface Cart {
   items: CartItem[];
   total: number;
@@ -150,3 +150,4 @@ export interface SupabaseExperienceResponse {
   categories?: { id: number; name: string; slug: string } | null;
   activity_packages?: { price: number; package_name: string }[];
 }
+

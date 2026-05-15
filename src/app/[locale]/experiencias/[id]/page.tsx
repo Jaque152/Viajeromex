@@ -9,20 +9,22 @@ import { supabase } from '@/lib/supabase';
 import { Loader2, Calendar as CalendarIcon, MapPin, Clock, Utensils, CheckCircle2 } from "lucide-react";
 import { T } from "@/components/T";
 import { useCart } from "@/context/CartContext";
+import { ActivityPackage } from "@/lib/types";
+import { Experience } from "@/lib/types";
 
-export default function ExperienceDetail() {
+export default function ExperienceDetailPage() {
   const params = useParams();
   const locale = useLocale();
   const router = useRouter();
   const { addToCart } = useCart();
   
-  const [experience, setExperience] = useState<any>(null);
+  const [experience, setExperience] = useState<Experience | null>(null);
   const [loading, setLoading] = useState(true);
   
   // Estados para reserva
   const [selectedDate, setSelectedDate] = useState("");
   const [pax, setPax] = useState(1);
-  const [selectedPackage, setSelectedPackage] = useState<any>(null);
+  const [selectedPackage, setSelectedPackage] = useState<ActivityPackage | null>(null);
 
   useEffect(() => {
     async function fetchDetail() {
@@ -33,7 +35,7 @@ export default function ExperienceDetail() {
           categories:categories_vm(name, slug),
           packages:activity_packages_vm(*)
         `)
-        .eq('id', params.id)
+        .eq('id', params.id as string)
         .single();
 
       if (error) {
@@ -42,7 +44,7 @@ export default function ExperienceDetail() {
 
       if (data) {
         if (data.packages) {
-          data.packages.sort((a: any, b: any) => a.min_pax - b.min_pax);
+          data.packages.sort((a: ActivityPackage, b: ActivityPackage) => a.min_pax - b.min_pax);
         }
         setExperience(data);
       }
@@ -54,7 +56,7 @@ export default function ExperienceDetail() {
   // LÓGICA CORE INTACTA
   useEffect(() => {
     if (experience?.packages && experience.packages.length > 0) {
-      const matchedPackage = experience.packages.find((pkg: any) => {
+      const matchedPackage = experience.packages.find((pkg: ActivityPackage) => {
         const max = pkg.max_pax || 999;
         return pax >= pkg.min_pax && pax <= max;
       });
@@ -67,17 +69,20 @@ export default function ExperienceDetail() {
     }
   }, [pax, experience]);
 
-  const handleAddToCart = () => {
-    if (!selectedDate || !selectedPackage) return;
+const handleAddToCart = () => {
+    // Le agregamos !experience a esta validación
+    if (!selectedDate || !selectedPackage || !experience) return; 
+    
     const cartItem = {
       packageId: selectedPackage.id,
-      experience: experience,
+      experience: experience, // ¡TypeScript ya sabe que no es null!
       levelName: selectedPackage.package_name,
       date: selectedDate,
       people: pax,
       pricePerPerson: selectedPackage.price,
       totalPrice: selectedPackage.price * pax
     };
+    
     addToCart(cartItem);
     router.push(`/${locale}/carrito`);
   };
@@ -130,7 +135,7 @@ export default function ExperienceDetail() {
                     <div className="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center"><Clock className="w-5 h-5 text-primary" strokeWidth={2.5}/></div>
                     <div>
                       <span className="block text-xs uppercase tracking-widest text-muted-foreground"><T>Duración</T></span>
-                      <T>{experience.duration}</T>
+                      <T>{experience.duration || ""}</T>
                     </div>
                   </div>
                   {experience.important_info?.["Horario de inicio"] && (
@@ -138,7 +143,7 @@ export default function ExperienceDetail() {
                       <div className="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center"><Clock className="w-5 h-5 text-primary" strokeWidth={2.5}/></div>
                       <div>
                         <span className="block text-xs uppercase tracking-widest text-muted-foreground"><T>Iniciamos a las</T></span>
-                        <T>{experience.important_info["Horario de inicio"][0]}</T>
+                        <T>{experience.important_info["Horario de inicio"][0] || ""}</T>
                       </div>
                     </div>
                   )}
@@ -172,7 +177,7 @@ export default function ExperienceDetail() {
                 <div className="mb-10">
                   <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 block"><T>Inversión por paladar</T></label>
                   <div className="space-y-3">
-                    {experience.packages?.map((pkg: any) => (
+                    {experience.packages?.map((pkg: ActivityPackage) => (
                       <div 
                         key={pkg.id} 
                         onClick={() => setPax(pkg.min_pax)} 

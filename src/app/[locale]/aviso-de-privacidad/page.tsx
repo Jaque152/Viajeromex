@@ -1,13 +1,5 @@
-import { LegalPage } from "@/components/LegalPage";
+import LegalPage from '@/components/LegalPage';
 
-const sections = [
-  {
-    heading: "Página fuera de servicio",
-    content: ""
-  },
-  
-];
-
-export default function AvisoDePrivacidad() {
-  return <LegalPage title="Aviso de Privacidad" sections={sections} />;
+export default function AvisoPrivacidadPage() {
+  return <LegalPage />;
 }
