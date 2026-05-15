@@ -1,4 +1,4 @@
-# mextripia - Plataforma Transaccional
+# viajeromex - Plataforma Transaccional
 
 
 ## Rutas del Proyecto

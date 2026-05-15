@@ -19,7 +19,7 @@ const getKeycopHeaders = (extraHeaders = {}) => ({
   'Content-Type': 'application/json',
   'Accept': 'application/json',
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Origin': 'https://mextripia.com', 
+  'Origin': 'https://viajeromex.com', 
   ...extraHeaders
 });
 
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
         cvv: cardInfo.cvv
       },
       items: keycopItems,
-      redirectUrl: 'https://mextripia.com' 
+      redirectUrl: 'https://viajeromex.com' 
     };
 
     const saleData = await safeKeycopFetch(`${KEYCOP_BASE_URL}/sale`, {
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
 
     // 5. GUARDAR EN SUPABASE
     const { data: customer, error: custError } = await supabase
-      .from('customers_Mextripia')
+      .from('customers_vm')
       .upsert({ 
         first_name: contactInfo.firstName, 
         last_name: contactInfo.lastName, 
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
     if (custError) throw new Error("Error guardando cliente en la base de datos.");
 
     const { data: booking, error: bookError } = await supabase
-      .from('bookings_Mextripia')
+      .from('bookings_vm')
       .insert({
         customer_id: customer.id,
         session_id: manualFolioData ? manualFolioData.folio : null,
@@ -169,133 +169,133 @@ export async function POST(req: Request) {
           unit_price: item.pricePerPerson
         }));
       if (validBookingItems.length > 0) {
-        const { error: itemsError } = await supabase.from('booking_items_Mextripia').insert(validBookingItems);
+        const { error: itemsError } = await supabase.from('booking_items_vm').insert(validBookingItems);
         if (itemsError) throw new Error("Error guardando items de reserva en la BD.");
       }   
     }
    
-    // 6. CORREOS ELECTRÓNICOS (Estética Epicúreo)
-    const bgDark = '#1B2B22'; // Forest Dark
-    const bgLight = '#FAF9F6'; // Warm Pearl
-    const primaryColor = '#C9A27E'; // Sand / Caramel
-    const textColor = '#1B2B22';
+    // 6. CORREOS ELECTRÓNICOS (Estilo Viajeromex Foodie)
+    const primaryColor = '#F97316'; // Papaya Orange
+    const secondaryColor = '#E11D48'; // Mexican Pink
+    const bgCard = '#ffffff';
+    const bgApp = '#f8fafc';
+    const textColor = '#1E293B';
+    const mutedColor = '#64748B';
 
     const isEnglish = locale === 'en';
     const subjectClient = isEnglish 
-      ? `Purchase Confirmation - Thank you for choosing Mextripia.` 
-      : `Confirmación de Reserva - Su experiencia con Mextripia.`;
+      ? `🍽️ Table reserved! Your foodie adventure with Viajeromex is confirmed.` 
+      : `🍽️ ¡Mesa reservada! Tu aventura foodie con Viajeromex está confirmada.`;
 
-    const greeting = isEnglish ? `Dear ${contactInfo.firstName},` : `Estimado/a ${contactInfo.firstName},`;
-    const confirmationText = isEnglish ? "Your culinary expedition has been successfully confirmed. It is a pleasure for us to serve you." : "Su expedición culinaria ha sido confirmada con éxito. Es un placer para nosotros servirle.";
-    const totalLabel = isEnglish ? "TOTAL PAID:" : "TOTAL ABONADO:";
-    const quoteLabel = isEnglish ? "Custom Design" : "Diseño a Medida";
+    const greeting = isEnglish ? `Hi ${contactInfo.firstName}!` : `¡Hola ${contactInfo.firstName}!`;
+    const confirmationText = isEnglish 
+      ? "Your payment was successful and your culinary route is officially on our calendar. Prepare your appetite!" 
+      : "Tu pago ha sido un éxito y tu ruta culinaria ya está en nuestro calendario. ¡Ve preparando el apetito!";
+    const totalLabel = isEnglish ? "Total Paid" : "Total Pagado";
+    const quoteLabel = isEnglish ? "Custom Tasting Menu" : "Cata a Medida (Folio VIP)";
     const folioLabel = isEnglish ? "Folio" : "Folio";
-    const qtyLabel = isEnglish ? "Guests" : "Asistentes";
-    const priceLabel = isEnglish ? "Investment" : "Inversión";
-    const experienceLabel = isEnglish ? "Experience" : "Experiencia";
-    const detailsLabel = isEnglish ? "Contact & Billing Details" : "Datos de Contacto y Facturación";
-    const phoneLabel = isEnglish ? "Phone:" : "Teléfono:";
-    const addressLabel = isEnglish ? "Address:" : "Dirección:";
-    const notesLabel = isEnglish ? "Special Requests:" : "Peticiones Especiales:";
+    const qtyLabel = isEnglish ? "Guests" : "Comensales";
+    const priceLabel = isEnglish ? "Price" : "Inversión";
+    const experienceLabel = isEnglish ? "Experience" : "Tu Menú";
+    const detailsLabel = isEnglish ? "Traveler Details" : "Datos del Viajero";
     
     const htmlClient = `
-        <div style="font-family: Arial, Helvetica, sans-serif; max-width: 600px; margin: auto; background-color: ${bgLight}; color: ${textColor}; border: 1px solid #E5E0D8; border-radius: 16px; overflow: hidden;">
-          <div style="background-color: ${bgDark}; padding: 40px 30px; text-align: center; border-bottom: 4px solid ${primaryColor};">
-            <h1 style="color: ${bgLight}; margin: 0; font-size: 32px; font-family: 'Georgia', serif; font-weight: normal; letter-spacing: 4px;">MEXTRIPIA</h1>
+      <div style="background-color: ${bgApp}; padding: 40px 20px; font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: auto; background-color: ${bgCard}; border-radius: 32px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">
+          
+          <div style="background-color: ${primaryColor}; padding: 40px 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 40px; font-weight: 900; letter-spacing: -1px;">Viajeromex</h1>
+            <p style="color: #ffffff; opacity: 0.9; margin: 10px 0 0; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Rutas de Sabor</p>
           </div>
+
           <div style="padding: 40px 30px;">
-            <h2 style="color: ${textColor}; margin-top: 0; font-size: 24px; font-family: 'Georgia', serif; font-weight: normal;">${greeting}</h2>
-            <p style="font-size: 14px; line-height: 1.8; color: #4A5D23;">${confirmationText}</p>
+            <h2 style="color: ${textColor}; margin-top: 0; font-size: 28px; font-weight: 900;">${greeting}</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: ${mutedColor}; font-family: Arial, sans-serif;">${confirmationText}</p>
             
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; margin-top: 30px;">
-              <thead>
-                <tr style="border-bottom: 1px solid #C9A27E; text-align: left;">
-                  <th style="padding: 12px 0; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: ${primaryColor};">${experienceLabel}</th>
-                  <th style="padding: 12px 0; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: ${primaryColor}; text-align: center;">${qtyLabel}</th>
-                  <th style="padding: 12px 0; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: ${primaryColor}; text-align: right;">${priceLabel}</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${!manualFolioData ? cart.items.map((item: CartItem) => `
-                  <tr style="border-bottom: 1px solid #E5E0D8;">
-                    <td style="padding: 20px 0;">
-                      <p style="margin: 0; font-weight: bold; font-size: 16px; color: ${textColor}; font-family: 'Georgia', serif;">${item.experience.title}</p>
-                      <p style="margin: 6px 0 0; font-size: 12px; color: #4A5D23;">📅 ${item.date} <br>✨ ${item.levelName}</p>
-                    </td>
-                    <td style="padding: 20px 0; text-align: center; vertical-align: top; font-size: 14px; color: ${textColor};">${item.people}</td>
-                    <td style="padding: 20px 0; text-align: right; font-weight: bold; font-size: 15px; color: ${textColor}; vertical-align: top;">${formatPrice(item.totalPrice)}</td>
-                  </tr>
-                `).join('') : `
-                   <tr style="border-bottom: 1px solid #E5E0D8;">
-                    <td style="padding: 20px 0;">
-                      <p style="margin: 0; font-weight: bold; font-size: 16px; color: ${textColor}; font-family: 'Georgia', serif;">${quoteLabel}</p>
-                      <p style="margin: 6px 0 0; font-size: 12px; color: #4A5D23;">${folioLabel}: ${manualFolioData.folio}</p>
-                    </td>
-                    <td style="padding: 20px 0; text-align: center; vertical-align: top; font-size: 14px;">1</td>
-                    <td style="padding: 20px 0; text-align: right; font-weight: bold; font-size: 15px; color: ${textColor}; vertical-align: top;">${formatPrice(manualFolioData.amount)}</td>
-                  </tr>
-                `}
-              </tbody>
-            </table>
-
-            <div style="background-color: transparent; border-top: 2px solid ${textColor}; padding: 25px 0 10px; text-align: right;">
-              <span style="font-size: 12px; font-weight: bold; color: ${textColor}; text-transform: uppercase; letter-spacing: 2px;">${totalLabel} </span>
-              <span style="font-size: 24px; font-family: 'Georgia', serif; color: ${primaryColor}; display: block; margin-top: 5px;">${formattedTotal}</span>
+            <div style="margin-top: 30px;">
+              ${!manualFolioData ? cart.items.map((item: CartItem) => `
+                <div style="background-color: #fff7ed; border: 2px solid #ffedd5; border-radius: 24px; padding: 20px; margin-bottom: 16px;">
+                  <p style="color: ${primaryColor}; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">✨ ${item.levelName}</p>
+                  <p style="margin: 0 0 10px; font-weight: 900; font-size: 20px; color: ${textColor};">${item.experience.title}</p>
+                  <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <tr>
+                      <td style="color: ${mutedColor}; font-size: 14px;">📅 ${item.date}</td>
+                      <td style="text-align: center; color: ${textColor}; font-weight: bold; font-size: 14px;">👨‍🍳 x${item.people}</td>
+                      <td style="text-align: right; color: ${textColor}; font-weight: 900; font-size: 18px;">${formatPrice(item.totalPrice)}</td>
+                    </tr>
+                  </table>
+                </div>
+              `).join('') : `
+                <div style="background-color: #fff7ed; border: 2px solid #ffedd5; border-radius: 24px; padding: 20px; margin-bottom: 16px;">
+                  <p style="color: ${primaryColor}; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">🎟️ ${folioLabel}: ${manualFolioData.folio}</p>
+                  <p style="margin: 0 0 10px; font-weight: 900; font-size: 20px; color: ${textColor};">${quoteLabel}</p>
+                  <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                    <tr>
+                      <td style="color: ${mutedColor}; font-size: 14px;">📅 Por confirmar</td>
+                      <td style="text-align: center; color: ${textColor}; font-weight: bold; font-size: 14px;">👨‍🍳 x1</td>
+                      <td style="text-align: right; color: ${textColor}; font-weight: 900; font-size: 18px;">${formatPrice(manualFolioData.amount)}</td>
+                    </tr>
+                  </table>
+                </div>
+              `}
             </div>
 
-            <div style="margin-top: 30px; padding: 25px; border-radius: 8px; border: 1px solid #E5E0D8; background-color: #ffffff;">
-              <h3 style="margin: 0 0 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: ${textColor};">${detailsLabel}</h3>
-              <p style="margin: 8px 0; font-size: 13px; color: #4A5D23;"><strong>Email:</strong> ${contactInfo.email}</p>
-              <p style="margin: 8px 0; font-size: 13px; color: #4A5D23;"><strong>${phoneLabel}</strong> ${contactInfo.phone}</p>
-              <p style="margin: 8px 0; font-size: 13px; color: #4A5D23;"><strong>${addressLabel}</strong> ${billingInfo.direccion}, ${billingInfo.localidad}, ${billingInfo.estado}, ${billingInfo.codigo_postal}, ${billingInfo.pais}</p>
-              ${orderNotes ? `<p style="margin: 8px 0; font-size: 13px; color: #4A5D23; border-top: 1px dashed #E5E0D8; padding-top: 10px; mt-2;"><strong>${notesLabel}</strong> ${orderNotes}</p>` : ''}
+            <div style="background-color: ${textColor}; color: white; border-radius: 24px; padding: 25px; margin: 30px 0; text-align: center;">
+              <span style="font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; font-family: Arial, sans-serif;">${totalLabel}</span>
+              <span style="font-size: 36px; font-weight: 900; display: block; margin-top: 5px; color: #84CC16;">${formattedTotal}</span>
             </div>
 
-            <div style="text-align: center; margin-top: 40px; border-top: 1px solid #E5E0D8; padding-top: 20px;">
-              <p style="font-size: 10px; color: #4A5D23; text-transform: uppercase; letter-spacing: 1px;">Mextripia © ${new Date().getFullYear()}. Todos los derechos reservados.</p>
+            <div style="padding: 25px; border-radius: 24px; border: 2px solid #f1f5f9; background-color: #ffffff; font-family: Arial, sans-serif;">
+              <h3 style="margin: 0 0 15px; font-size: 16px; font-weight: 900; color: ${textColor};">${detailsLabel}</h3>
+              <p style="margin: 5px 0; font-size: 14px; color: ${mutedColor};"><strong>Email:</strong> ${contactInfo.email}</p>
+              <p style="margin: 5px 0; font-size: 14px; color: ${mutedColor};"><strong>Tel:</strong> ${contactInfo.phone}</p>
+              ${orderNotes ? `<div style="margin-top: 15px; padding-top: 15px; border-top: 2px dashed #f1f5f9;"><p style="margin: 0; font-size: 14px; color: ${secondaryColor}; font-weight: bold;">📝 Notas:</p><p style="margin: 5px 0 0; font-size: 14px; color: ${textColor};">${orderNotes}</p></div>` : ''}
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+              <p style="font-size: 12px; color: ${mutedColor}; font-weight: bold; font-family: Arial, sans-serif;">¡Prepara el apetito! Nos vemos pronto.<br>El equipo de Viajeromex.</p>
             </div>
           </div>
         </div>
+      </div>
     `;
 
     await resend.emails.send({
-      from: 'Mextripia <reservas@mextripia.com>', 
+      from: 'Viajeromex <reserva@viajeromex.com>', 
       to: [contactInfo.email], 
       subject: subjectClient,
       html: htmlClient,
     });
 
-
     // --- NOTIFICACIÓN INTERNA PARA EL EQUIPO ---
-    const subjectInternal = `[NUEVA VENTA] - ${formattedTotal} - ${contactInfo.firstName} ${contactInfo.lastName}`;
+    const subjectInternal = `🌮 [VENTA NUEVA] - ${formattedTotal} - ${contactInfo.firstName}`;
     
     const htmlInternal = `
-      <div style="font-family: Arial, sans-serif; color: #333;">
-        <h2 style="color: #4A5D23;">¡Nueva Reserva Confirmada! (Vía Keycop)</h2>
-        <p>Se ha procesado un pago exitoso a través de la plataforma Mextripia.</p>
-        <hr/>
-        <p><strong>Monto Total:</strong> ${formattedTotal}</p>
-        <p><strong>ID Transacción (Keycop):</strong> ${saleData.transactionId || saleData.authorizationNumber}</p>
-        <hr/>
-        <h3>Datos del Huésped:</h3>
-        <p><strong>Nombre:</strong> ${contactInfo.firstName} ${contactInfo.lastName}</p>
-        <p><strong>Email:</strong> ${contactInfo.email}</p>
-        <p><strong>Teléfono:</strong> ${contactInfo.phone}</p>
-        <p><strong>Dirección:</strong> ${billingInfo.direccion}, ${billingInfo.localidad}, ${billingInfo.estado}, ${billingInfo.codigo_postal}</p>
-        <p><strong>Notas Especiales:</strong> ${orderNotes || 'Sin notas'}</p>
-        <hr/>
-        <h3>Itinerario Adquirido:</h3>
-        <ul>
-          ${!manualFolioData ? cart.items.map((item: CartItem) => `
-            <li>${item.experience.title} (x${item.people}) - ${formatPrice(item.totalPrice)}</li>
-          `).join('') : `<li>Pago Manual de Folio: ${manualFolioData.folio}</li>`}
-        </ul>
+      <div style="font-family: Arial, sans-serif; color: #1E293B; background: #f8fafc; padding: 20px;">
+        <div style="background: white; padding: 30px; border-radius: 16px; max-width: 600px; margin: auto; border-top: 6px solid #84CC16;">
+          <h2 style="color: #F97316; margin-top: 0;">¡Ka-ching! Nueva Venta (Keycop)</h2>
+          <p style="font-size: 24px; font-weight: bold; color: #84CC16; margin: 10px 0;">${formattedTotal}</p>
+          <p style="color: #64748B;"><strong>Transacción:</strong> ${saleData.transactionId || saleData.authorizationNumber}</p>
+          <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 20px 0;"/>
+          <h3>Datos del Cliente:</h3>
+          <p><strong>Nombre:</strong> ${contactInfo.firstName} ${contactInfo.lastName}</p>
+          <p><strong>Email:</strong> ${contactInfo.email}</p>
+          <p><strong>Teléfono:</strong> ${contactInfo.phone}</p>
+          <p><strong>Notas Especiales:</strong> ${orderNotes || 'Ninguna'}</p>
+          <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 20px 0;"/>
+          <h3>Resumen:</h3>
+          <ul style="background: #f1f5f9; padding: 20px 40px; border-radius: 12px;">
+            ${!manualFolioData ? cart.items.map((item: CartItem) => `
+              <li style="margin-bottom: 10px;"><strong>${item.experience.title}</strong> (x${item.people}) - ${formatPrice(item.totalPrice)}</li>
+            `).join('') : `<li>Pago Manual Folio: <strong>${manualFolioData.folio}</strong></li>`}
+          </ul>
+        </div>
       </div>
     `;
 
     await resend.emails.send({
-      from: 'Sistema Mextripia <reservas@mextripia.com>',
-      to: ['atencion@mextripia.com'],
+      from: 'Sistema Viajeromex <reservas@viajeromex.com>',
+      to: ['atencion@viajeromex.com'],
       subject: subjectInternal,
       html: htmlInternal,
     });

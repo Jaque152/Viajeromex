@@ -3,129 +3,88 @@
 import { useLocale } from 'next-intl';
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Menu, X, ArrowRight } from "lucide-react";
+import { ShoppingBag, Menu, X, UtensilsCrossed } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { T } from "@/components/T";
 
 export function Header() {
   const locale = useLocale();
-  const { cart, getItemCount } = useCart(); // Asegúrate de exportar 'cart' desde tu CartContext
+  const { getItemCount } = useCart();
   const itemCount = getItemCount();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 30);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(price);
-  };
-
   return (
     <>
-      <header className={`fixed top-0 w-full z-50 transition-all duration-700 ${isScrolled ? "bg-background/95 backdrop-blur-md py-4 border-b border-border/50 shadow-sm" : "bg-transparent py-8"}`}>
-        <div className="container mx-auto px-6 relative flex items-center justify-between md:justify-center">
+      <header className="fixed top-6 w-full z-50 px-4 md:px-6 flex justify-center pointer-events-none">
+        <div className={`pointer-events-auto transition-all duration-500 flex items-center justify-between px-6 py-3 rounded-full w-full max-w-5xl ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-xl shadow-primary/10 border border-white/50" : "bg-white shadow-lg border border-slate-100"}`}>
           
-          <nav className="hidden md:flex absolute left-6 items-center gap-10">
-            <Link href={`/${locale}/experiencias`} className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground hover:text-primary transition-colors">
-              <T>Expediciones</T>
+          {/* Logo Viajeromex Gastronómico */}
+          <Link href={`/${locale}/`} className="flex items-center gap-2 group">
+            <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform">
+              <UtensilsCrossed className="w-5 h-5" strokeWidth={2.5} />
+            </div>
+            <span className="text-2xl font-bold font-bricolage text-foreground tracking-tight">
+              Viajeromex
+            </span>
+          </Link>
+
+          {/* Nav Desktop */}
+          <nav className="hidden md:flex items-center gap-8 font-bold text-sm text-foreground/80">
+            <Link href={`/${locale}/experiencias`} className="hover:text-primary transition-colors py-2 px-3 rounded-full hover:bg-primary/5">
+              <T>Rutas Culinarias</T>
             </Link>
-            <Link href={`/${locale}/#cotizar`} className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground hover:text-primary transition-colors">
-              <T>Diseño a Medida</T>
+            <Link href={`/${locale}/#cotizar`} className="hover:text-secondary transition-colors py-2 px-3 rounded-full hover:bg-secondary/5">
+              <T>Cata a Medida</T>
             </Link>
           </nav>
 
-          <Link href={`/${locale}/`} className="text-3xl md:text-4xl font-serif font-medium tracking-widest text-primary flex items-center justify-center">
-            Mextripia<span className="text-secondary text-5xl leading-none">.</span>
-          </Link>
-
-          <div className="hidden md:flex absolute right-6 items-center gap-8">
-            <Link href={`/${locale === 'es' ? 'en' : 'es'}`} className="text-[11px] font-bold tracking-[0.2em] text-foreground hover:text-primary transition-colors">
+          {/* Acciones */}
+          <div className="hidden md:flex items-center gap-4">
+            <Link href={`/${locale === 'es' ? 'en' : 'es'}`} className="w-10 h-10 flex items-center justify-center font-black text-xs rounded-full bg-muted text-foreground hover:bg-primary hover:text-white transition-colors">
               {locale === 'es' ? 'EN' : 'ES'}
             </Link>
-
-            {/* Contenedor del Mini-Carrito con Hover */}
-            <div className="relative group py-4">
-              <Link href={`/${locale}/carrito`} className="flex items-center gap-2">
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-foreground group-hover:text-primary transition-colors">
-                  <T>Bolsa</T>
-                </span>
-                <div className="relative">
-                  <ShoppingBag className="w-4 h-4 text-foreground group-hover:text-primary transition-colors" strokeWidth={1.5} />
-                  {itemCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2 w-3.5 h-3.5 bg-secondary text-white text-[9px] font-bold flex items-center justify-center rounded-full">
-                      {itemCount}
-                    </span>
-                  )}
-                </div>
-              </Link>
-
-              {/* Dropdown Mini-Carrito */}
-              <div className="absolute right-0 top-full mt-0 w-80 bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] rounded-3xl border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:scale-100 scale-95 z-50 overflow-hidden">
-                <div className="p-6 max-h-[300px] overflow-y-auto">
-                  {cart?.items?.length > 0 ? (
-                    <div className="space-y-4">
-                      {cart.items.map((item: any, idx: number) => (
-                        <div key={idx} className="flex gap-4 border-b border-border/50 pb-4 last:border-0 last:pb-0">
-                          <img src={item.experience.images[0] || '/placeholder.jpg'} alt={item.experience.title} className="w-12 h-12 object-cover rounded-lg" />
-                          <div className="flex-1">
-                            <p className="text-xs font-bold text-foreground line-clamp-1">{item.experience.title}</p>
-                            <p className="text-[10px] text-muted-foreground">{item.people} pax • {item.date}</p>
-                            <p className="text-xs font-semibold text-primary mt-1">{formatPrice(item.totalPrice)}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <ShoppingBag className="w-8 h-8 text-border mx-auto mb-3" strokeWidth={1} />
-                      <p className="text-sm text-muted-foreground font-light"><T>Su bolsa está vacía.</T></p>
-                    </div>
-                  )}
-                </div>
-                
-                {cart?.items?.length > 0 && (
-                  <div className="bg-background p-6 border-t border-border">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground"><T>Total</T></span>
-                      <span className="text-lg font-serif text-foreground">{formatPrice(cart.total)}</span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Link href={`/${locale}/checkout`} className="w-full bg-foreground text-white text-center py-3 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-primary transition-colors">
-                        <T>Pagar ahora</T>
-                      </Link>
-                      <Link href={`/${locale}/carrito`} className="w-full bg-transparent border border-foreground text-foreground text-center py-3 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-foreground hover:text-background transition-colors">
-                        <T>Ver detalles</T>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
             
+            <Link href={`/${locale}/carrito`} className="flex items-center gap-3 bg-secondary text-white px-5 py-2.5 rounded-full hover:bg-secondary/90 transition-transform hover:scale-105 active:scale-95 shadow-md shadow-secondary/30">
+              <ShoppingBag className="w-4 h-4" strokeWidth={2.5} />
+              <span className="font-bold text-sm"><T>Orden</T> {itemCount > 0 && `(${itemCount})`}</span>
+            </Link>
           </div>
 
-          <button className="md:hidden text-foreground" onClick={() => setMobileMenuOpen(true)}>
-            <Menu className="w-6 h-6" strokeWidth={1.5} />
+          {/* Menú Hamburguesa */}
+          <button className="md:hidden bg-muted w-10 h-10 rounded-full flex items-center justify-center text-foreground" onClick={() => setMobileMenuOpen(true)}>
+            <Menu className="w-5 h-5" strokeWidth={2.5} />
           </button>
+
         </div>
       </header>
 
-      {/* Menú Móvil */}
-      <div className={`fixed inset-0 z-[60] bg-background flex flex-col justify-center p-8 transition-all duration-700 ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-        <button className="absolute top-8 right-6 text-foreground" onClick={() => setMobileMenuOpen(false)}>
-          <X className="w-8 h-8" strokeWidth={1} />
-        </button>
-        <nav className="flex flex-col items-center gap-8">
-          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/`} className="text-4xl font-serif text-foreground hover:text-primary transition-colors"><T>Inicio</T></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/experiencias`} className="text-4xl font-serif text-foreground hover:text-primary transition-colors"><T>Expediciones</T></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/#cotizar`} className="text-4xl font-serif text-foreground hover:text-primary transition-colors"><T>Diseño a Medida</T></Link>
-          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/carrito`} className="text-xl font-serif text-secondary mt-8 border-b border-secondary pb-1">
-            <T>Bolsa</T> ({itemCount})
-          </Link>
+      {/* Menú Móvil Overlay */}
+      <div className={`fixed inset-0 z-[60] bg-primary flex flex-col p-8 transition-transform duration-500 ease-in-out ${mobileMenuOpen ? "translate-y-0" : "-translate-y-full"}`}>
+        <div className="flex justify-between items-center mb-12">
+          <span className="text-3xl font-black text-white font-bricolage">Viajeromex</span>
+          <button className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md" onClick={() => setMobileMenuOpen(false)}>
+            <X className="w-6 h-6" strokeWidth={2.5} />
+          </button>
+        </div>
+        
+        <nav className="flex flex-col gap-6 text-white">
+          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/`} className="text-4xl font-black font-bricolage hover:translate-x-2 transition-transform"><T>Inicio</T></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/experiencias`} className="text-4xl font-black font-bricolage hover:translate-x-2 transition-transform"><T>Rutas Culinarias</T></Link>
+          <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/#cotizar`} className="text-4xl font-black font-bricolage hover:translate-x-2 transition-transform"><T>Cata a Medida</T></Link>
+          
+          <div className="mt-8 border-t border-white/20 pt-8">
+            <Link onClick={() => setMobileMenuOpen(false)} href={`/${locale}/carrito`} className="flex items-center gap-4 text-2xl font-black font-bricolage bg-white text-primary w-fit px-8 py-4 rounded-full">
+              <ShoppingBag className="w-6 h-6" strokeWidth={2.5} />
+              <T>Ver Orden</T> ({itemCount})
+            </Link>
+          </div>
         </nav>
       </div>
     </>

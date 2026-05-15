@@ -9,8 +9,8 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: "Mextripia - Curaduría de Experiencias Personalizadas",
-  description: "Curamos itinerarios a la medida y experiencias de alto nivel. Descubre los destinos más asombrosos con el respaldo y la exclusividad de Mextripia.",
+  title: "Viajeromex | Rutas Culinarias y Experiencias de Sabor",
+  description: "Explora México a través de su gastronomía. Desde joyas de comida callejera hasta cenas exclusivas, en Viajeromex diseñamos viajes y catas a medida que despertarán todos tus sentidos.",
 };
 
 export default async function RootLayout({

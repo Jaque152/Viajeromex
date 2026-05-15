@@ -1,51 +1,76 @@
 "use client";
 
 import { T } from "@/components/T";
-import { Utensils, Sparkles, Map, Users } from "lucide-react";
+import { Utensils, Sparkles, Map, ChefHat } from "lucide-react";
 
 export function AboutServices() {
-  const services = [
-    { icon: Utensils, title: "Curaduría Culinaria", desc: "Diseño de menús y degustaciones de alta gama." },
-    { icon: Sparkles, title: "Atmósferas Inmersivas", desc: "Ambientación y producción sensorial de espacios." },
-    { icon: Users, title: "Activaciones de Marca", desc: "Conectamos tu esencia con audiencias clave." },
-    { icon: Map, title: "Logística Premium", desc: "Coordinación milimétrica y hospitalidad VIP." },
-  ];
-
   return (
-    <section className="py-24 md:py-32 overflow-hidden">
+    <section className="py-24 md:py-32 overflow-hidden bg-background">
       <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+        
+        {/* Cabecera Centrada */}
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-bounce-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 font-bold text-xs uppercase tracking-widest border border-primary/20">
+            <Sparkles className="w-4 h-4" />
+            <T>Nuestro Secreto</T>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-black font-bricolage leading-[1.1] text-foreground mb-6">
+            <T>Forjamos recuerdos a través del</T> <span className="text-primary"><T>paladar</T></span>.
+          </h2>
+          <p className="text-muted-foreground text-lg font-medium">
+            <T>Desde veladas íntimas hasta recorridos callejeros, orquestamos cada elemento para garantizar una experiencia que te dejará con un excelente sabor de boca.</T>
+          </p>
+        </div>
+
+        {/* Bento Box Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 auto-rows-[250px]">
           
-          {/* ¿Qué hacemos? (Parafraseado) */}
-          <div className="w-full lg:w-5/12 animate-fade-in-up">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-6 block">
-              <T>Nuestra Esencia</T>
-            </span>
-            <h2 className="text-4xl md:text-5xl mb-8 leading-tight">
-              <T>Forjamos recuerdos a través de los sentidos.</T>
-            </h2>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              <T>Transformamos visiones en realidades palpables. Nuestro propósito es fusionar la alta gastronomía con el diseño de eventos, logrando que cada anfitrión o marca conecte profundamente con sus invitados.</T>
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              <T>Desde veladas íntimas hasta montajes majestuosos, orquestamos cada elemento técnico y creativo para garantizar una ejecución sublime que trascienda la promoción y se convierta en una emoción.</T>
-            </p>
+          {/* Tarjeta 1: Ancha (Col-span-2) */}
+          <div className="md:col-span-2 md:row-span-1 bg-primary p-8 rounded-[3rem] text-white flex flex-col justify-between shadow-xl shadow-primary/20 hover-float animate-bounce-up delay-100">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+              <ChefHat className="w-7 h-7" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-3xl font-black font-bricolage mb-2"><T>Curaduría Culinaria</T></h3>
+              <p className="font-medium text-white/90 text-lg"><T>Diseño de menús, catas y degustaciones de alta gama de la mano de chefs locales galardonados.</T></p>
+            </div>
           </div>
 
-          {/* ¿Qué ofrecemos? (Parafraseado) */}
-          <div className="w-full lg:w-7/12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              {services.map((srv, idx) => (
-                <div key={idx} className="bg-white p-8 rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:-translate-y-2 transition-transform duration-500 animate-fade-in-up" style={{ animationDelay: `${idx * 150}ms` }}>
-                  <srv.icon className="w-8 h-8 text-primary mb-6" strokeWidth={1.5} />
-                  <h3 className="text-xl mb-3"><T>{srv.title}</T></h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed"><T>{srv.desc}</T></p>
-                </div>
-              ))}
+          {/* Tarjeta 2: Alta (Row-span-2) */}
+          <div className="md:col-span-1 md:row-span-2 bg-slate-900 p-8 rounded-[3rem] text-white flex flex-col justify-between shadow-2xl hover-float animate-bounce-up delay-200">
+            <div className="w-14 h-14 bg-secondary/20 text-secondary rounded-2xl flex items-center justify-center">
+              <Sparkles className="w-7 h-7" strokeWidth={2.5} />
+            </div>
+            <div className="mt-8">
+              <h3 className="text-4xl font-black font-bricolage mb-4 text-secondary"><T>Atmósferas Únicas</T></h3>
+              <p className="font-medium text-slate-300 text-lg leading-relaxed"><T>Cenas en cenotes ocultos, veladas clandestinas y caminatas por mercados vibrantes. El entorno importa tanto como la comida.</T></p>
+            </div>
+          </div>
+
+          {/* Tarjeta 3: Cuadrada */}
+          <div className="md:col-span-1 md:row-span-1 bg-white border-2 border-slate-100 p-8 rounded-[3rem] flex flex-col justify-between hover-float animate-bounce-up delay-300">
+            <div className="w-14 h-14 bg-accent/20 text-accent-foreground rounded-2xl flex items-center justify-center">
+              <Utensils className="w-7 h-7" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black font-bricolage mb-2 text-foreground"><T>Sabores Auténticos</T></h3>
+              <p className="font-medium text-muted-foreground"><T>Te llevamos a las joyas escondidas que solo los locales conocen.</T></p>
+            </div>
+          </div>
+
+          {/* Tarjeta 4: Cuadrada */}
+          <div className="md:col-span-1 md:row-span-1 bg-secondary/10 border-2 border-secondary/20 p-8 rounded-[3rem] flex flex-col justify-between hover-float animate-bounce-up delay-300">
+            <div className="w-14 h-14 bg-secondary text-white rounded-2xl flex items-center justify-center">
+              <Map className="w-7 h-7" strokeWidth={2.5} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black font-bricolage mb-2 text-secondary"><T>Logística Impecable</T></h3>
+              <p className="font-medium text-secondary/80"><T>Nos encargamos de todos los traslados. Tú solo disfruta el bocado.</T></p>
             </div>
           </div>
 
         </div>
+
       </div>
     </section>
   );

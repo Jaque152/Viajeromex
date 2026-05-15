@@ -18,10 +18,11 @@ export default async function Home({ params }: Props) {
       <Header />
       <Hero />
       <AboutServices />
-      <Experiences/>
+      <Contact />
+      {/* <Experiences/> */}
       <FifaSection/>
       <Pricing />
-      <Contact />
+      
       <Footer />
     </main>
   );
