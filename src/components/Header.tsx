@@ -27,7 +27,7 @@ export function Header() {
   const switchLocalePath = () => {
     if (!pathname) return `/${newLocale}`;
     const segments = pathname.split('/');
-    segments[1] = newLocale; // Cambiamos solo el 'es' por 'en' o viceversa
+    segments[1] = newLocale; 
     return segments.join('/') || '/';
   };
 
