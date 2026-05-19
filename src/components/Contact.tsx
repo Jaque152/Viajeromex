@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { T } from "@/components/T";
+import { useT } from "@/hooks/useT";
 import { Mail, Phone, MapPin, Loader2, CheckCircle, Smile } from "lucide-react";
 
 export function Contact() {
@@ -14,6 +15,11 @@ export function Contact() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Traduciendo los Placeholders mediante hook
+  const phNombre = useT("Tu Nombre");
+  const phEmail = useT("Tu Correo");
+  const phMensaje = useT("¿En qué te ayudamos hoy?");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +52,7 @@ export function Contact() {
     }
   };
 
-  const inputClass = "w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-foreground font-bold focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all placeholder:text-muted-foreground placeholder:font-medium";
+  const inputClass = "w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 text-foreground font-bold focus:border-secondary focus:ring-4 focus:ring-secondary/10 outline-none transition-all placeholder:text-muted-foreground/60 placeholder:font-medium";
 
   return (
     <section id="contacto" className="py-24 md:py-32 bg-slate-50 scroll-mt-20">
@@ -69,7 +75,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-black text-foreground text-lg leading-none mb-1"><T>Nuestra Cocina (Sede)</T></p>
-                  <p className="text-muted-foreground font-medium text-sm">Av. Río Consulado 1550 Cto Interior 516 Oficina 102, Col Tlatilco, Azcapotzalco Cp 02860</p>
+                  <p className="text-muted-foreground font-medium text-sm">Av. Río Consulado 1550, Azcapotzalco</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-5 hover-float delay-100">
@@ -78,7 +84,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-black text-foreground text-lg leading-none mb-1"><T>Llámanos</T></p>
-                  <p className="text-muted-foreground font-medium text-sm">+52 (55) 1940 6598</p>
+                  <p className="text-muted-foreground font-medium text-sm">+52 (55) 5555 5555</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-5 hover-float delay-200">
@@ -87,7 +93,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-black text-foreground text-lg leading-none mb-1"><T>Escríbenos</T></p>
-                  <p className="text-muted-foreground font-medium text-sm">atencion@viajeromex.com</p>
+                  <p className="text-muted-foreground font-medium text-sm">contacto@viajeromex.com</p>
                 </div>
               </div>
             </div>
@@ -102,9 +108,9 @@ export function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={inputClass} placeholder="Tu Nombre" />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} placeholder="Tu Correo" />
-                <textarea rows={5} value={mensaje} onChange={(e) => setMensaje(e.target.value)} required className={`${inputClass} resize-none`} placeholder="¿En qué te ayudamos hoy?"></textarea>
+                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={inputClass} placeholder={phNombre} />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} placeholder={phEmail} />
+                <textarea rows={5} value={mensaje} onChange={(e) => setMensaje(e.target.value)} required className={`${inputClass} resize-none`} placeholder={phMensaje}></textarea>
                 
                 <button type="submit" disabled={isSubmitting} className="btn-3d w-full bg-secondary text-white h-16 rounded-2xl font-black text-lg hover:bg-rose-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-3 mt-4">
                   {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" strokeWidth={3} /> : null}

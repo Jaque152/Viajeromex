@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { T } from "@/components/T";
+import { useT } from "@/hooks/useT";
 import { ArrowRight, Loader2, CheckCircle, Sparkles, Ticket, Utensils } from "lucide-react";
 
 export function Pricing() {
@@ -19,6 +20,14 @@ export function Pricing() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Traduciendo los Placeholders mediante hook para evitar fallos de TS
+  const phNombre = useT("Tu Nombre Completo");
+  const phEmail = useT("Correo Electrónico");
+  const phTelefono = useT("Teléfono Móvil");
+  const phDestino = useT("¿A qué destino viajamos?");
+  const phAsistentes = useT("¿Cuántos son?");
+  const phDetalles = useT("Cuéntanos más... alergias, tipo de comida que buscas, ocasión especial.");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,19 +67,15 @@ export function Pricing() {
     }
   };
 
-  // Clases compartidas para el nuevo diseño "Bento" de los inputs
   const bentoInput = "w-full h-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] px-6 py-5 text-foreground font-bold focus:border-secondary focus:bg-white focus:shadow-xl focus:shadow-secondary/10 outline-none transition-all placeholder:text-muted-foreground/60 placeholder:font-medium text-lg";
 
   return (
     <section id="cotizar" className="py-24 md:py-32 bg-background scroll-mt-24 relative overflow-hidden">
-      
-      {/* Decoraciones de fondo */}
       <div className="absolute top-40 left-10 w-72 h-72 bg-accent/20 rounded-full blur-[80px] pointer-events-none" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-6 max-w-5xl relative z-10">
         
-        {/* Cabecera Centrada */}
         <div className="text-center max-w-3xl mx-auto mb-12 animate-bounce-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 font-bold text-xs uppercase tracking-widest border border-primary/20">
             <Utensils className="w-4 h-4" />
@@ -84,7 +89,6 @@ export function Pricing() {
           </p>
         </div>
 
-        {/* Tarjeta VIP (Pagar Folio) cruzando el diseño */}
         <div className="bg-secondary text-white rounded-[2.5rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-2xl shadow-secondary/30 hover-float animate-bounce-up delay-100 mb-12 border-4 border-white/20 backdrop-blur-sm relative overflow-hidden">
           <div className="absolute -right-10 -top-10 text-white/10 rotate-12 pointer-events-none">
             <Ticket className="w-48 h-48" strokeWidth={1} />
@@ -105,7 +109,6 @@ export function Pricing() {
           </Link>
         </div>
 
-        {/* Formulario Bento Box */}
         <div className="bg-white border-2 border-slate-100 rounded-[3rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 animate-bounce-up delay-200">
           {isSuccess ? (
             <div className="flex flex-col items-center justify-center text-center py-16">
@@ -118,36 +121,31 @@ export function Pricing() {
           ) : (
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-5">
               
-              {/* Fila 1 */}
               <div className="md:col-span-12">
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={bentoInput} placeholder="Tu Nombre Completo" />
+                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={bentoInput} placeholder={phNombre} />
               </div>
 
-              {/* Fila 2 */}
               <div className="md:col-span-6">
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={bentoInput} placeholder="Correo Electrónico" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={bentoInput} placeholder={phEmail} />
               </div>
               <div className="md:col-span-6">
-                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required className={bentoInput} placeholder="Teléfono Móvil" />
+                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required className={bentoInput} placeholder={phTelefono} />
               </div>
 
-              {/* Fila 3 (Mix asimétrico) */}
               <div className="md:col-span-5">
-                <input type="text" value={lugar} onChange={(e) => setLugar(e.target.value)} required className={bentoInput} placeholder="¿A qué destino viajamos?" />
+                <input type="text" value={lugar} onChange={(e) => setLugar(e.target.value)} required className={bentoInput} placeholder={phDestino} />
               </div>
               <div className="md:col-span-4">
-                <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required className={`${bentoInput} text-muted-foreground focus:text-foreground`} placeholder="Fecha" />
+                <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required className={`${bentoInput} text-muted-foreground focus:text-foreground`} />
               </div>
               <div className="md:col-span-3">
-                <input type="number" value={asistentes} onChange={(e) => setAsistentes(e.target.value)} required min="1" className={bentoInput} placeholder="¿Cuántos son?" />
+                <input type="number" value={asistentes} onChange={(e) => setAsistentes(e.target.value)} required min="1" className={bentoInput} placeholder={phAsistentes} />
               </div>
 
-              {/* Fila 4 */}
               <div className="md:col-span-12 h-32">
-                <textarea value={detalles} onChange={(e) => setDetalles(e.target.value)} className={`${bentoInput} resize-none`} placeholder="Cuéntanos más... alergias, tipo de comida que buscas, ocasión especial."></textarea>
+                <textarea value={detalles} onChange={(e) => setDetalles(e.target.value)} className={`${bentoInput} resize-none`} placeholder={phDetalles}></textarea>
               </div>
 
-              {/* Botón Submit */}
               <div className="md:col-span-12 mt-4">
                 <button type="submit" disabled={isSubmitting} className="btn-3d w-full bg-primary text-white h-20 rounded-[2rem] font-black text-2xl hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-xl shadow-primary/20">
                   {isSubmitting ? <Loader2 className="w-8 h-8 animate-spin" strokeWidth={3} /> : <Utensils className="w-7 h-7" strokeWidth={3} />}

@@ -2,18 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale as useNextLocale } from "next-intl";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { T } from "@/components/T";
 import { useT } from "@/hooks/useT";
 import { useCart } from "@/context/CartContext";
-import { ArrowRight, ShieldCheck, Ticket, Sparkles, Utensils } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, ShieldCheck, Ticket, Sparkles } from "lucide-react";
 
 export default function PagoFolioPage() {
   const router = useRouter();
-  const locale = useLocale();
+  const locale = useNextLocale();
   const { addToCart } = useCart();
   
   const [monto, setMonto] = useState("");
@@ -22,7 +21,11 @@ export default function PagoFolioPage() {
   const [folio, setFolio] = useState("");
   const [fecha, setFecha] = useState("");
 
-  const btnConfirmar = useT("Ir a Pagar");
+  // Traduciendo los Placeholders mediante hook
+  const phMonto = useT("0.00");
+  const phTitular = useT("Titular de la Reserva");
+  const phEmail = useT("Correo Electrónico");
+  const phFolio = useT("Folio");
 
   const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/[^0-9.]/g, ''); 
@@ -78,7 +81,6 @@ export default function PagoFolioPage() {
           
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
             
-            {/* Columna Info */}
             <div className="w-full lg:w-5/12 animate-bounce-up">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/20 text-accent-foreground rounded-full mb-6 font-black text-xs uppercase tracking-widest border border-accent/30">
                 <Ticket className="w-4 h-4" />
@@ -109,11 +111,9 @@ export default function PagoFolioPage() {
               </div>
             </div>
 
-            {/* Formulario Estilo Pase VIP */}
             <div className="w-full lg:w-7/12 animate-bounce-up delay-150">
               <form onSubmit={handleConfirmarReserva} className="bg-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.1)] border-2 border-slate-50 relative">
                 
-                {/* Monto Gigante */}
                 <div className="mb-10 p-8 bg-primary/5 rounded-[2.5rem] border-4 border-primary/10 text-center group transition-all focus-within:bg-white focus-within:border-primary">
                   <label className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-3 block"><T>Monto del Folio (MXN)</T></label>
                   <div className="flex items-center justify-center">
@@ -122,7 +122,7 @@ export default function PagoFolioPage() {
                       type="text" 
                       value={monto}
                       onChange={handleMontoChange}
-                      placeholder="0.00"
+                      placeholder={phMonto}
                       required
                       className="bg-transparent border-none text-6xl font-black font-bricolage text-primary outline-none w-full text-center placeholder:text-primary/10"
                     />
@@ -130,13 +130,13 @@ export default function PagoFolioPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                  <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={bentoInput} placeholder="Titular de la Reserva" />
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={bentoInput} placeholder="Correo Electrónico" />
+                  <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className={bentoInput} placeholder={phTitular} />
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={bentoInput} placeholder={phEmail} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
                   <div className="relative">
-                    <input type="text" value={folio} onChange={(e) => setFolio(e.target.value.toUpperCase())} required className={`${bentoInput} uppercase pr-14`} placeholder="Folio" />
+                    <input type="text" value={folio} onChange={(e) => setFolio(e.target.value.toUpperCase())} required className={`${bentoInput} uppercase pr-14`} placeholder={phFolio} />
                     <Ticket className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-200" />
                   </div>
                   <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required className={`${bentoInput} text-muted-foreground focus:text-foreground`} />

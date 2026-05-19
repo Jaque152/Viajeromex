@@ -2,7 +2,7 @@
 
 import { useLocale } from 'next-intl';
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // <--- Importamos para leer la ruta actual
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ShoppingBag, Menu, X, UtensilsCrossed } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -10,7 +10,8 @@ import { T } from "@/components/T";
 
 export function Header() {
   const locale = useLocale();
-  const pathname = usePathname(); // <--- Leemos en qué URL estamos
+  const pathname = usePathname();
+  const router = useRouter();
   const { getItemCount } = useCart();
   const itemCount = getItemCount();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,13 +23,20 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // LÓGICA PARA CONSERVAR LA PESTAÑA AL TRADUCIR
-  const newLocale = locale === 'es' ? 'en' : 'es';
-  const switchLocalePath = () => {
-    if (!pathname) return `/${newLocale}`;
+  // CONTROL DE IDIOMA PRESERVANDO EL HASH ANCHOR (Ej: #cotizar)
+  const handleLocaleSwitch = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const newLocale = locale === 'es' ? 'en' : 'es';
+    if (!pathname) return;
+
     const segments = pathname.split('/');
-    segments[1] = newLocale; 
-    return segments.join('/') || '/';
+    segments[1] = newLocale;
+    const newPath = segments.join('/') || '/';
+    
+    // Captura el hash actual del navegador (ej. #cotizar) y lo concatena
+    const currentHash = typeof window !== 'undefined' ? window.location.hash : '';
+    
+    router.push(newPath + currentHash);
   };
 
   return (
@@ -41,7 +49,6 @@ export function Header() {
             <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform shrink-0">
               <UtensilsCrossed className="w-5 h-5" strokeWidth={2.5} />
             </div>
-            {/* Ocultamos el texto en pantallas MUY pequeñas para dar espacio a los botones */}
             <span className="text-2xl font-bold font-bricolage text-foreground tracking-tight hidden sm:block">
               Viajeromex
             </span>
@@ -60,18 +67,21 @@ export function Header() {
           {/* Acciones */}
           <div className="flex items-center gap-3">
             
-            {/* Botón de Idioma ) */}
-            <Link href={switchLocalePath()} className="w-10 h-10 shrink-0 flex items-center justify-center font-black text-xs rounded-full bg-muted text-foreground hover:bg-primary hover:text-white transition-colors">
+            {/* Botón de Idioma con fijación de Hash */}
+            <button 
+              onClick={handleLocaleSwitch} 
+              className="w-10 h-10 shrink-0 flex items-center justify-center font-black text-xs rounded-full bg-muted text-foreground hover:bg-primary hover:text-white transition-colors cursor-pointer"
+            >
               {locale === 'es' ? 'EN' : 'ES'}
-            </Link>
+            </button>
             
-            {/* Botón de Carrito (Solo Desktop) */}
+            {/* Botón de Carrito */}
             <Link href={`/${locale}/carrito`} className="hidden md:flex items-center gap-3 bg-secondary text-white px-5 py-2.5 rounded-full hover:bg-secondary/90 transition-transform hover:scale-105 active:scale-95 shadow-md shadow-secondary/30">
               <ShoppingBag className="w-4 h-4" strokeWidth={2.5} />
               <span className="font-bold text-sm"><T>Orden</T> {itemCount > 0 && `(${itemCount})`}</span>
             </Link>
 
-            {/* Menú Hamburguesa (Solo Móvil) */}
+            {/* Menú Hamburguesa */}
             <button className="md:hidden bg-muted w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-foreground" onClick={() => setMobileMenuOpen(true)}>
               <Menu className="w-5 h-5" strokeWidth={2.5} />
             </button>
