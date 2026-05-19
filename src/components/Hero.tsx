@@ -35,21 +35,6 @@ export function Hero() {
               <T>Desde los secretos del mercado tradicional hasta cenas exclusivas con chefs locales. Diseñamos rutas gastronómicas que despiertan todos tus sentidos.</T>
             </p>
             
-            <div className="flex flex-wrap items-center gap-4">
-              <Link 
-                href={`/${locale}/experiencias`} 
-                className="btn-3d bg-primary text-white px-8 py-4 rounded-full font-black text-lg flex items-center gap-3 border-2 border-transparent"
-              >
-                <T>Ver Menú de Tours</T>
-                <ArrowRight className="w-5 h-5" strokeWidth={3} />
-              </Link>
-              <Link 
-                href={`/${locale}/#cotizar`} 
-                className="px-8 py-4 rounded-full font-bold text-foreground bg-muted hover:bg-slate-200 transition-colors"
-              >
-                <T>Cata a Medida</T>
-              </Link>
-            </div>
           </div>
 
           {/* Columna Collage Visual Foodie (Derecha) */}

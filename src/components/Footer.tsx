@@ -31,8 +31,8 @@ export function Footer() {
           
           <div className="flex flex-col gap-4">
             <span className="text-white font-bold text-lg mb-2"><T>Descubrir</T></span>
-            <Link href={`/${locale}/experiencias`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Todas las Aventuras</T></Link>
-            <Link href={`/${locale}/#cotizar`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Viajes a la Medida</T></Link>
+            <Link href={`/${locale}/experiencias`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Rutas Culinarias</T></Link>
+            <Link href={`/${locale}/#cotizar`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Cata a Medida</T></Link>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -49,7 +49,7 @@ export function Footer() {
             <span className="text-white font-bold text-lg mb-2"><T>Legal</T></span>
             <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Aviso de Privacidad</T></a>
             <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Términos y Condiciones</T></a>
-            <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Políticas de Cancelación</T></a>
+            <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Políticas de Reembolsos y Cancelaciones</T></a>
           </div>
         </div>
 

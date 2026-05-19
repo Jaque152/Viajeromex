@@ -105,7 +105,7 @@ function ExperienciasContent() {
                       />
                       {/* Etiqueta de Precio Flotante */}
                       <div className="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl shadow-sm font-black text-primary flex flex-col items-end leading-none">
-                        <span className="text-[10px] text-muted-foreground uppercase"><T>Desde</T></span>
+                        <span className="text-[10px] text-muted-foreground uppercase"><T>IVA incluido</T></span>
                         <span>{formatPrice(exp.displayPrice)}</span>
                       </div>
                     </div>

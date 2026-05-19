@@ -69,7 +69,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-black text-foreground text-lg leading-none mb-1"><T>Nuestra Cocina (Sede)</T></p>
-                  <p className="text-muted-foreground font-medium text-sm">Av. Río Consulado 1550, Azcapotzalco</p>
+                  <p className="text-muted-foreground font-medium text-sm">Av. Río Consulado 1550 Cto Interior 516 Oficina 102, Col Tlatilco, Azcapotzalco Cp 02860</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-5 hover-float delay-100">
@@ -78,7 +78,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="font-black text-foreground text-lg leading-none mb-1"><T>Llámanos</T></p>
-                  <p className="text-muted-foreground font-medium text-sm">+52 (55) 5555 5555</p>
+                  <p className="text-muted-foreground font-medium text-sm">+52 (55) 1940 6598</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-5 hover-float delay-200">

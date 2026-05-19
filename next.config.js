@@ -2,12 +2,7 @@
 const nextConfig = {
   allowedDevOrigins: ["*.preview.same-app.com"],
   images: {
-    domains: [
-      "source.unsplash.com",
-      "images.unsplash.com",
-      "ext.same-assets.com",
-      "ugc.same-assets.com",
-    ],
+    unoptimized: true, // <--- ESTA ES LA MAGIA QUE EVITA EL TIMEOUT
     remotePatterns: [
       {
         protocol: "https",
@@ -17,6 +12,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
         pathname: "/**",
       },
       {

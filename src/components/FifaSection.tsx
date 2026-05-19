@@ -1,10 +1,14 @@
 "use client";
 
+import { useLocale } from 'next-intl';
+import Link from 'next/link';
 import { T } from "@/components/T";
 import Image from 'next/image';
 import { Trophy } from "lucide-react";
 
 export function FifaSection() {
+  const locale = useLocale();
+
   return (
     <section className="py-24 md:py-32 relative bg-background overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl relative">
@@ -40,9 +44,14 @@ export function FifaSection() {
               <T>Asegura tu lugar en los recintos más exclusivos durante los partidos. Nos encargamos de reservas privadas, pantallas gigantes y la mejor comida para que tú solo grites el gol.</T>
             </p>
             
-            <button className="btn-3d bg-primary text-white px-8 py-4 rounded-full font-black text-lg w-fit hover:bg-orange-600 transition-colors shadow-xl shadow-primary/20">
+            <Link 
+              href={`/${locale}/#contacto`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-3d bg-primary text-white px-8 py-4 rounded-full font-black text-lg w-fit hover:bg-orange-600 transition-colors shadow-xl shadow-primary/20 text-center inline-block"
+            >
               <T>Asegurar Espacio</T>
-            </button>
+            </Link>
           </div>
 
         </div>

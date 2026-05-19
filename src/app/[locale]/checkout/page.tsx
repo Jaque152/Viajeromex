@@ -198,7 +198,7 @@ function CheckoutContent() {
                   
                   <div className="flex items-center gap-4 mt-8 p-4 bg-white/5 rounded-2xl border border-white/5">
                     <ShieldCheck className="w-8 h-8 text-accent shrink-0" strokeWidth={2.5} />
-                    <p className="text-[11px] font-black text-white/50 tracking-wide uppercase"><T>Tus datos están protegidos por encriptación bancaria de grado militar.</T></p>
+                    <p className="text-[11px] font-black text-white/50 tracking-wide uppercase"><T>Tus datos están protegidos por encriptación.</T></p>
                   </div>
                 </div>
               </div>
