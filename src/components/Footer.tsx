@@ -47,9 +47,9 @@ export function Footer() {
 
           <div className="flex flex-col gap-4">
             <span className="text-white font-bold text-lg mb-2"><T>Legal</T></span>
-            <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Aviso de Privacidad</T></a>
-            <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Términos y Condiciones</T></a>
-            <a href="#" className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Políticas de Reembolsos y Cancelaciones</T></a>
+            <Link href={`/${locale}/aviso-de-privacidad`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Aviso de Privacidad</T></Link>
+            <Link href={`/${locale}/terminos-y-condiciones`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Términos y Condiciones</T></Link>
+            <Link href={`/${locale}/politica-de-cancelacion`} className="text-slate-400 font-medium hover:text-secondary transition-colors text-sm"><T>Políticas de Reembolsos y Cancelaciones</T></Link>
           </div>
         </div>
 

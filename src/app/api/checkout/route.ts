@@ -7,31 +7,31 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// --- CREDENCIALES KEYCOP ---
-const KEYCOP_EMAIL = process.env.KEYCOP_EMAIL!;
-const KEYCOP_PASSWORD = process.env.KEYCOP_PASSWORD!;
-const KEYCOP_BASE_URL = 'https://pagos.keycop.com.mx/api/v1';
+// --- CREDENCIALES OCTANO ---
+const OCTANO_EMAIL = process.env.OCTANO_EMAIL!;
+const OCTANO_PASSWORD = process.env.OCTANO_PASSWORD!;
+// La URL la sacamos directamente de tu plugin PHP
+const OCTANO_BASE_URL = 'https://pagos.octanopayments.com/api/v1';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const formatPrice = (price: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(price);
 
-const getKeycopHeaders = (extraHeaders = {}) => ({
+const getOctanoJsonHeaders = (extraHeaders = {}) => ({
   'Content-Type': 'application/json',
   'Accept': 'application/json',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
   'Origin': 'https://viajeromex.com', 
   ...extraHeaders
 });
 
-async function safeKeycopFetch(url: string, options: RequestInit, stepName: string) {
+async function safeOctanoFetch(url: string, options: RequestInit, stepName: string) {
   const res = await fetch(url, options);
   const text = await res.text(); 
   
   try {
     return JSON.parse(text);
   } catch (e) {
-    console.error(`Respuesta cruda de Keycop en [${stepName}]:`, text);
-    throw new Error(`Falla en ${stepName}. Keycop respondió: ${text.slice(0, 50)}...`);
+    console.error(`Respuesta cruda de Octano en [${stepName}]:`, text);
+    throw new Error(`Falla en ${stepName}. Octano respondió: ${text.slice(0, 50)}...`);
   }
 }
 
@@ -42,19 +42,31 @@ export async function POST(req: Request) {
 
     const tempReferenceId = `REF-${Date.now()}`;
 
-    // 1. SIGNIN EN KEYCOP
-    const signinData = await safeKeycopFetch(`${KEYCOP_BASE_URL}/signin`, {
+    // =========================================================================
+    // 1. SIGNIN EN OCTANO (Usando x-www-form-urlencoded según OctanoApi.php)
+    // =========================================================================
+    const signinBody = new URLSearchParams();
+    signinBody.append('email', OCTANO_EMAIL);
+    signinBody.append('password', OCTANO_PASSWORD);
+
+    const signinData = await safeOctanoFetch(`${OCTANO_BASE_URL}/signin`, {
       method: 'POST',
-      headers: getKeycopHeaders(),
-      body: JSON.stringify({ email: KEYCOP_EMAIL, password: KEYCOP_PASSWORD })
-    }, 'Login Keycop');
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'Origin': 'https://viajeromex.com'
+      },
+      body: signinBody.toString()
+    }, 'Login Octano');
     
     if (!signinData.authToken) {
-      throw new Error("Credenciales de Keycop incorrectas o bloqueadas.");
+      throw new Error("Credenciales de Octano incorrectas o bloqueadas.");
     }
     const authToken = signinData.authToken;
 
-    // 2. TOKENIZACIÓN DE TARJETA KEYCOP
+    // =========================================================================
+    // 2. TOKENIZACIÓN DE TARJETA OCTANO
+    // =========================================================================
     const cardPayload = {
       cardData: {
         cardNumber: cardInfo.number,
@@ -64,19 +76,21 @@ export async function POST(req: Request) {
       }
     };
 
-    const tokenData = await safeKeycopFetch(`${KEYCOP_BASE_URL}/card/tokenizer`, {
+    const tokenData = await safeOctanoFetch(`${OCTANO_BASE_URL}/card/tokenizer`, {
       method: 'POST',
-      headers: getKeycopHeaders({ 'Authorization': `Bearer ${authToken}` }),
+      headers: getOctanoJsonHeaders({ 'Authorization': `Bearer ${authToken}` }),
       body: JSON.stringify(cardPayload)
     }, 'Tokenización de Tarjeta');
 
     if (!tokenData.cardNumberToken) {
-      throw new Error("Tarjeta rechazada por Keycop (Datos inválidos o encriptación fallida).");
+      throw new Error("Tarjeta rechazada por Octano (Datos inválidos o encriptación fallida).");
     }
     const cardToken = tokenData.cardNumberToken;
 
+    // =========================================================================
     // 3. PREPARAR ITEMS PARA LA VENTA
-    const keycopItems = manualFolioData 
+    // =========================================================================
+    const octanoItems = manualFolioData 
       ? [{ title: `Pago Cotización: ${manualFolioData.folio}`, amount: manualFolioData.amount, quantity: 1, id: manualFolioData.folio }]
       : cart.items.map((item: CartItem) => ({
           title: item.experience.title,
@@ -87,7 +101,9 @@ export async function POST(req: Request) {
 
     const finalAmountToCharge = manualFolioData ? manualFolioData.amount : cart.total;
 
+    // =========================================================================
     // 4. PROCESAR LA VENTA
+    // =========================================================================
     const salePayload = {
       amount: Number(finalAmountToCharge.toFixed(2)),
       currency: 484, // MXN
@@ -102,29 +118,31 @@ export async function POST(req: Request) {
         address1: billingInfo.direccion || 'Sin Especificar',
         postalCode: billingInfo.codigo_postal || '00000',
         state: billingInfo.estado || 'CDMX',
-        country: 'MX',
+        country: 'Mx', // <- Octano requiere 'Mx' (Mayúscula/Minúscula) según ordenData.php
         ip: '127.0.0.1' 
       },
       cardData: {
         cardNumberToken: cardToken,
         cvv: cardInfo.cvv
       },
-      items: keycopItems,
+      items: octanoItems,
       redirectUrl: 'https://viajeromex.com' 
     };
 
-    const saleData = await safeKeycopFetch(`${KEYCOP_BASE_URL}/sale`, {
+    const saleData = await safeOctanoFetch(`${OCTANO_BASE_URL}/sale`, {
       method: 'POST',
-      headers: getKeycopHeaders({ 'Authorization': `Bearer ${authToken}` }),
+      headers: getOctanoJsonHeaders({ 'Authorization': `Bearer ${authToken}` }),
       body: JSON.stringify(salePayload)
     }, 'Procesar Venta');
     
     if (saleData.status !== 'APPROVED' && saleData.status !== 'PENDING') {
-      console.error("❌ DETALLE DEL RECHAZO KEYCOP:", saleData); 
+      console.error("❌ DETALLE DEL RECHAZO OCTANO:", saleData); 
       throw new Error(`Pago declinado: ${saleData.message || saleData.responseCode || 'Tarjeta rechazada por el banco'}`);
     }
 
-    // 5. GUARDAR EN SUPABASE
+    // =========================================================================
+    // 5. GUARDAR EN SUPABASE (Tablas con terminación _vm)
+    // =========================================================================
     const { data: customer, error: custError } = await supabase
       .from('customers_vm')
       .upsert({ 
@@ -145,7 +163,7 @@ export async function POST(req: Request) {
         total_amount: finalAmountToCharge,
         payment_status: 'paid',
         transaction_id: saleData.transactionId || saleData.authorizationNumber || tempReferenceId,
-        payment_provider: 'keycop', 
+        payment_provider: 'octano', 
         payment_date: new Date().toISOString(),
         pais: billingInfo.pais,
         direccion: billingInfo.direccion,
@@ -174,7 +192,9 @@ export async function POST(req: Request) {
       }   
     }
    
+    // =========================================================================
     // 6. CORREOS ELECTRÓNICOS (Estilo Viajeromex Foodie)
+    // =========================================================================
     const primaryColor = '#F97316'; // Papaya Orange
     const secondaryColor = '#E11D48'; // Mexican Pink
     const bgCard = '#ffffff';
@@ -273,7 +293,7 @@ export async function POST(req: Request) {
     const htmlInternal = `
       <div style="font-family: Arial, sans-serif; color: #1E293B; background: #f8fafc; padding: 20px;">
         <div style="background: white; padding: 30px; border-radius: 16px; max-width: 600px; margin: auto; border-top: 6px solid #84CC16;">
-          <h2 style="color: #F97316; margin-top: 0;">¡Ka-ching! Nueva Venta (Keycop)</h2>
+          <h2 style="color: #F97316; margin-top: 0;">¡Ka-ching! Nueva Venta (Octano)</h2>
           <p style="font-size: 24px; font-weight: bold; color: #84CC16; margin: 10px 0;">${formattedTotal}</p>
           <p style="color: #64748B;"><strong>Transacción:</strong> ${saleData.transactionId || saleData.authorizationNumber}</p>
           <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 20px 0;"/>

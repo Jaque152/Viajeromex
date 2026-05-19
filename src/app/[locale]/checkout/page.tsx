@@ -181,7 +181,7 @@ function CheckoutContent() {
                     <T>Método de Pago</T>
                   </h2>
                   <div className="h-8 opacity-90 grayscale brightness-200">
-                     <img src="/logo-keycop-2.png" alt="Keycop" className="h-full object-contain" />
+                     <img src="/logo-octano-2.png" alt="Octano" className="h-full object-contain" />
                   </div>
                 </div>
                   
