@@ -52,6 +52,7 @@ function CheckoutContent() {
   const phNombreTarjeta = useT("Nombre en tarjeta");
   const phFecha = useT("MM/AA");
   const phCvv = useT("CVV");
+  const phNotas = useT("Ej: Soy alérgico a los mariscos, mesa cerca de la ventana...");
   const textProcesando = useT("Cocinando pago...");
   const textPagar = useT("Confirmar Pago");
 
@@ -162,7 +163,9 @@ function CheckoutContent() {
                 
                 {addNotes && (
                   <textarea 
-                    placeholder="Ej: Soy alérgico a los mariscos, mesa cerca de la ventana..." value={orderNotes} onChange={(e) => setOrderNotes(e.target.value)}
+                    placeholder={phNotas} 
+                    value={orderNotes} 
+                    onChange={(e) => setOrderNotes(e.target.value)}
                     className={`${bentoInput} mt-6 min-h-[120px] resize-none`}
                   />
                 )}
