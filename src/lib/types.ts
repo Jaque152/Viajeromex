@@ -70,15 +70,6 @@ export interface CustomQuote {
   created_at: string;
 }
 
-export interface ContactMessage {
-  id: number;
-  full_name: string;
-  phone: string;
-  email: string;
-  message: string;
-  created_at: string;
-}
-
 export interface Booking {
   id: string; 
   customer_id: string;
