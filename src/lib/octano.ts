@@ -91,10 +91,22 @@ export async function processOctanoPayment(payment: PaymentData) {
             },
         };
 
-        const saleResponse = await axios.post(`${OCTANO_BASE_URL}/sale`, salePayload, config);
+        const saleResponse = await axios.post(
+            `${OCTANO_BASE_URL}/sale`,
+             salePayload,
+             config
+        );
+
+        if (saleResponse.data.status !== "APPROVED") {
+            return {
+                success: false,
+                error: saleResponse.data.message || saleResponse.data.responseCode || "Tarjeta rechazada por el banco",
+                data: saleResponse.data,
+            };
+        }
 
         return {
-            success: saleResponse.data.status == "APPROVED",
+            success: true,
             data: saleResponse.data,
         };
     } catch (error: unknown) {
