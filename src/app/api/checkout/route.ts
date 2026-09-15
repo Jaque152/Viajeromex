@@ -83,8 +83,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, bookingId: booking.id });
 
-  } catch (error: any) {
-    console.error("❌ Error en Checkout:", error);
-    return NextResponse.json({ success: false, message: error.message || "Error del servidor" }, { status: 400 });
+  } catch (error: unknown) {
+    console.error("❌ Error en Checkout:", (error as Error).message);
+    return NextResponse.json({ success: false, message: (error as Error).message || "Error del servidor" }, { status: 400 });
   }
 }

@@ -1,6 +1,5 @@
 // /lib/octano.ts
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
 export interface PaymentData {
     amount: number;
     orderId: string;
@@ -98,11 +97,28 @@ export async function processOctanoPayment(payment: PaymentData) {
             success: saleResponse.data.status == "APPROVED",
             data: saleResponse.data,
         };
-    } catch (error: any) {
-        console.error("Error en pasarela Octano:", error?.response?.data || error?.message);
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            const errorData = error.response?.data as Record<string, unknown>;
+            const errorDetail = errorData || error.message;
+
+            console.error("Error en pasarela Octano:", errorDetail);
+
+            return {
+                success: false,
+                error: (errorData?.message as string) || 
+                       (errorData?.error as string) || 
+                       "Hubo un problema al procesar la transacción.",
+                details: errorDetail,
+            };
+        }
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido al procesar el pago.";        
+        console.error("Error general en Octano:", errorMessage);
+
         return {
             success: false,
-            error: error?.response?.data?.message || error?.response?.data?.error || "Hubo un problema al procesar la transacción.",
+            error: errorMessage,
+            details: errorMessage,
         };
     }
 }
