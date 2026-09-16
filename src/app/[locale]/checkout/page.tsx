@@ -67,7 +67,9 @@ function CheckoutContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ locale, contactInfo, billingInfo, orderNotes: addNotes ? orderNotes : null, cart, cardInfo, formattedTotal: formatPrice(finalTotal), manualFolioData:null })
       });
+      
       const data = await response.json();
+      console.log(data)
       if (!response.ok || !data.success) throw new Error(data.message || "Error procesando el pago");
       setShowSuccess(true);
       clearCart();
@@ -190,7 +192,7 @@ function CheckoutContent() {
                   
                 <div className="grid gap-6 max-w-lg">
                   <div className="relative">
-                    <input placeholder={phTarjeta} required maxLength={19} value={cardInfo.number} onChange={(e)=>setCardInfo({...cardInfo, number: e.target.value.replace(/\D/g, '')})} className="bg-white/10 border-2 border-white/5 rounded-2xl h-16 font-mono text-xl tracking-[0.2em] focus:bg-white/20 focus:border-accent transition-all w-full px-6 text-white placeholder:text-white/20" />
+                    <input placeholder={phTarjeta} required maxLength={16} value={cardInfo.number} onChange={(e)=>setCardInfo({...cardInfo, number: e.target.value.replace(/\D/g, '')})} className="bg-white/10 border-2 border-white/5 rounded-2xl h-16 font-mono text-xl tracking-[0.2em] focus:bg-white/20 focus:border-accent transition-all w-full px-6 text-white placeholder:text-white/20" />
                     <CreditCard className="absolute right-6 top-1/2 -translate-y-1/2 w-6 h-6 text-white/20" />
                   </div>
                   <input placeholder={phNombreTarjeta} required value={cardInfo.name} onChange={(e)=>setCardInfo({...cardInfo, name: e.target.value.toUpperCase()})} className="bg-white/10 border-2 border-white/5 rounded-2xl h-16 font-bold focus:bg-white/20 focus:border-accent transition-all w-full px-6 text-white placeholder:text-white/20" />

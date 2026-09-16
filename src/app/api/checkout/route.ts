@@ -12,6 +12,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { contactInfo, billingInfo, cart, cardInfo, manualFolioData, orderNotes } = body;
 
+    console.log(body)
+
     // 1. OBTENER LA IP REAL (Crítico para Producción)
     const forwardedFor = req.headers.get('x-forwarded-for');
     const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1';
@@ -21,7 +23,7 @@ export async function POST(req: Request) {
 
     // 2. CONSTRUIR EL OBJETO PARA LA NUEVA GUÍA
     const paymentData: PaymentData = {
-      amount: finalAmount,
+      amount: Number(finalAmount),
       orderId: tempReferenceId,
       currency: 'MXN',
       cardData: {
@@ -42,13 +44,15 @@ export async function POST(req: Request) {
         cp: billingInfo.codigo_postal || '00000',
         pais: 'MX'
       },
-      metadata: {
-        ip: clientIp // ✅ PASAMOS LA IP REAL AQUÍ
-      }
+      // metadata: {
+      //   ip: clientIp // ✅ PASAMOS LA IP REAL AQUÍ
+      // }
     };
 
     // 3. PROCESAR EL PAGO CON TU NUEVA FUNCIÓN
     const paymentResult = await processOctanoPayment(paymentData);
+
+    console.log(paymentResult)
 
     if (!paymentResult.success) {
       throw new Error(`Pago declinado: ${paymentResult.error}`);

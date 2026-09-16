@@ -26,10 +26,8 @@
     "next-intl": "^4.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-grab": "latest",
     "react-i18next": "^17.0.2",
     "resend": "^6.9.4",
-    "same-runtime": "^0.0.1",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
