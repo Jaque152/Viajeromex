@@ -44,7 +44,7 @@ export async function processOctanoPayment(
         const authResponse = await axios.post(
             `${OCTANO_BASE_URL}/signin`,
             {
-                email: process.env.OCTANO_USER,
+                email: process.env.OCTANO_EMAIL,
                 password: process.env.OCTANO_PASSWORD,
             },
             {
